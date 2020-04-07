@@ -99,34 +99,29 @@ x_inc = 0.0
 y_inc = 0.0
 r_inc = 0.0
 
-# rotation
+# delta position 
 t_x = 0.0
 t_y = 0.0
+a_x = a_y = 0.0 #initial acceleration
+v_x = v_y = 0.0 #initial velocity
+
+# rotation
 angle = 0.0
 
-
+compression = 0.0
 def key_event(window,key,scancode,action,mods):
-    global x_inc, y_inc, r_inc
-    
-    if key == 263: x_inc -= 0.0001
-    if key == 262: x_inc += 0.0001
-    
-    if key == 265: y_inc += 0.0001
-    if key == 264: y_inc -= 0.0001
-    
-    if key == 65: r_inc += 0.1
-    if key == 83: r_inc -= 0.1
-    
+    global compression, a_y, v_y
+    if key == 264: 
+        compression += 1
+        if action == glfw.RELEASE:
+            v_y = 1.0
+            a_y = -1
+    # quit simulation
     if key == 81: glfw.set_window_should_close(window, True)
-    #print(key)
     
 glfw.set_key_callback(window,key_event)
 
 glfw.show_window(window)
-
-
-# Loop 
-
 
 def matrix_mult(a,b):
     m_a = a.reshape(4,4)
@@ -135,43 +130,76 @@ def matrix_mult(a,b):
     c = m_c.reshape(1,16)
     return c
 
+# Loop 
+##  setting semi-fixed time step variables
+global_time = 0.0
+dt = 1.0/60 # defining minimal refresh rate
 
+cur_time = glfw.get_time()
+      
 while not glfw.window_should_close(window):
+    time = glfw.get_time()
+    frame_time = time - cur_time
+    cur_time = time
 
-    t_x += x_inc
-    t_y += y_inc
-    angle += r_inc
-    
-    c = math.cos( math.radians(angle) )
-    s = math.sin( math.radians(angle) )
-    
+    # event input handling 
     glfw.poll_events() 
     
+    while frame_time > 0.0:
+            delta = min(frame_time,dt)
+
+            frame_time -= delta
+            global_time += delta
+
+           #  
+          #  t_x += x_inc
+          #  t_y += y_inc
+          #  angle += r_inc
+          #  
+             # getting translation by semi-implicit euler method
+            v_x += a_x*delta # velocity changes due to acceleration values
+            v_y += a_y*delta
+        
+            t_x += v_x*delta # t_x,y represents position 
+            t_y += v_y*delta
+                 
+            if t_y < 0.0:
+                a_y = 0.0
+                v_y = 0.0
+            c = math.cos( math.radians(angle) )
+            s = math.sin( math.radians(angle) )
+             
+            # Applying transformations
+            
+            mat_rotation = np.array(
+            [c  , -s , 0.0, 0.0, 
+            s  , c  , 0.0, 0.0, 
+            0.0, 0.0, 1.0, 0.0, 
+            0.0, 0.0, 0.0, 1.0], np.float32)
+            
+            mat_translation = np.array(
+            [1.0, 0.0, 0.0, t_x, 
+            0.0, 1.0, 0.0, t_y, 
+            0.0, 0.0, 1.0, 0.0, 
+            0.0, 0.0, 0.0, 1.0],
+            np.float32)
+            
+            mat_transform = matrix_mult(mat_translation,mat_rotation)    
+            
+            loc = glGetUniformLocation(program, "mat")
+            glUniformMatrix4fv(loc, 1, GL_TRUE, mat_transform)
+
+            # cleaning color buffers
+            glClear(GL_COLOR_BUFFER_BIT) 
+            glClearColor(1.0, 1.0, 1.0, 1.0)
+        
+            #Draw 
     
-    glClear(GL_COLOR_BUFFER_BIT) 
-    glClearColor(1.0, 1.0, 1.0, 1.0)
-    
-    # Applying transformations
-    
-    mat_rotation = np.array([  c  , -s , 0.0, 0.0, 
-    s  , c  , 0.0, 0.0, 
-    0.0, 0.0, 1.0, 0.0, 
-    0.0, 0.0, 0.0, 1.0], np.float32)
-    
-    mat_translation = np.array([  1.0, 0.0, 0.0, t_x, 
-    0.0, 1.0, 0.0, t_y, 
-    0.0, 0.0, 1.0, 0.0, 
-    0.0, 0.0, 0.0, 1.0], np.float32)
-    
-    mat_transform = matrix_mult(mat_translation,mat_rotation)    
-    
-    loc = glGetUniformLocation(program, "mat")
-    glUniformMatrix4fv(loc, 1, GL_TRUE, mat_transform)
-    
-    #Draw 
-    
-    glDrawArrays(GL_LINE_STRIP, 0, len(vertices))
-    
-    glfw.swap_buffers(window)
+            glDrawArrays(GL_LINE_STRIP, 0, len(vertices))
+            glfw.swap_interval(1)
+            glfw.swap_buffers(window)
+            print("t=", global_time)
+            print("v=", v_y)
+            print("a=", a_y)
     
 glfw.terminate()
