@@ -2,11 +2,13 @@
 #   python -m venv project_dir
 #   pip install glfw numpy pyopengl
 #   python t1.py
+
 import glfw
 from OpenGL.GL import *
 import OpenGL.GL.shaders
 import numpy as np
 import math
+import random
 
 glfw.init()
 glfw.window_hint(glfw.VISIBLE, glfw.FALSE);
@@ -24,13 +26,13 @@ vertex_code = """
     }
     """
 
-
 # Fragment Shader
 fragment_code = """
     void main(){
     gl_FragColor = vec4(1.0,0.0,0.0,1.0);
     }
     """
+
 # Request a program and shader slots from GPU
 program  = glCreateProgram()
 vertex   = glCreateShader(GL_VERTEX_SHADER)
@@ -71,9 +73,9 @@ n_revolutions = 5
 r_spring = 0.05
 y_attenuation_value = 0.001
 for i in range(len(vertices)):
-    vertices['position'][i] = [ r_spring*math.cos((i/(len(vertices)/n_revolutions))*2*math.pi), y_attenuation_value*(i-(len(vertices)/2)) ] 
+    vertices['position'][i] = [ r_spring*math.cos((i/(len(vertices)/n_revolutions))*2*math.pi), y_attenuation_value*(i-(len(vertices)/2)) ]
     # versao macacos do artico abaixo
-    #vertices['position'][i] = [ r_spring*math.sin(((len(vertices)-i)/len(vertices))*2*math.pi)*math.sin(((len(vertices)-i)/len(vertices))*20*math.pi), y_attenuation_value*(i-(len(vertices)/2)) ]
+    # vertices['position'][i] = [ r_spring*math.sin(((len(vertices)-i)/len(vertices))*2*math.pi)*math.sin(((len(vertices)-i)/len(vertices))*20*math.pi), y_attenuation_value*(i-(len(vertices)/2)) ]
 
 # Request a buffer slot from GPU
 buffer = glGenBuffers(1)
@@ -99,7 +101,7 @@ x_inc = 0.0
 y_inc = 0.0
 r_inc = 0.0
 
-# delta position 
+# delta position
 t_x = 0.0
 t_y = 0.0
 a_x = a_y = 0.0 #initial acceleration
@@ -108,18 +110,29 @@ v_x = v_y = 0.0 #initial velocity
 # rotation
 angle = 0.0
 
-compression = 0.0
-def key_event(window,key,scancode,action,mods):
-    global compression, a_y, v_y
-    if key == 264: 
-        compression += 1
+# compression
+com = 0.0
+is_pressed = False
+
+def key_event(window, key, scancode, action, mods):
+    global com, a_y, v_y, is_pressed
+    if key == 264:
+        is_pressed = True
+        if com < 3:
+            com += 0.01
+
         if action == glfw.RELEASE:
-            v_y = 1.0
+            v_y = 1.1*com # Make the "jump" proportional to the compression
             a_y = -1
+            is_pressed = False
     # quit simulation
-    if key == 81: glfw.set_window_should_close(window, True)
-    
-glfw.set_key_callback(window,key_event)
+    if key == ord('q'):
+        glfw.set_window_should_close(window, True)
+
+    if key == ord('r'):
+        print('how do I reset?')
+
+glfw.set_key_callback(window, key_event)
 
 glfw.show_window(window)
 
@@ -130,76 +143,86 @@ def matrix_mult(a,b):
     c = m_c.reshape(1,16)
     return c
 
-# Loop 
+# Loop
 ##  setting semi-fixed time step variables
 global_time = 0.0
 dt = 1.0/60 # defining minimal refresh rate
 
 cur_time = glfw.get_time()
-      
+
 while not glfw.window_should_close(window):
     time = glfw.get_time()
     frame_time = time - cur_time
     cur_time = time
 
-    # event input handling 
-    glfw.poll_events() 
-    
+    # event input handling
+    glfw.poll_events()
+
     while frame_time > 0.0:
-            delta = min(frame_time,dt)
+        delta = min(frame_time,dt)
 
-            frame_time -= delta
-            global_time += delta
+        frame_time -= delta
+        global_time += delta
 
-           #  
-          #  t_x += x_inc
-          #  t_y += y_inc
-          #  angle += r_inc
-          #  
-             # getting translation by semi-implicit euler method
-            v_x += a_x*delta # velocity changes due to acceleration values
-            v_y += a_y*delta
-        
-            t_x += v_x*delta # t_x,y represents position 
-            t_y += v_y*delta
-                 
-            if t_y < 0.0:
-                a_y = 0.0
-                v_y = 0.0
-            c = math.cos( math.radians(angle) )
-            s = math.sin( math.radians(angle) )
-             
-            # Applying transformations
-            
-            mat_rotation = np.array(
-            [c  , -s , 0.0, 0.0, 
-            s  , c  , 0.0, 0.0, 
-            0.0, 0.0, 1.0, 0.0, 
-            0.0, 0.0, 0.0, 1.0], np.float32)
-            
-            mat_translation = np.array(
-            [1.0, 0.0, 0.0, t_x, 
-            0.0, 1.0, 0.0, t_y, 
-            0.0, 0.0, 1.0, 0.0, 
-            0.0, 0.0, 0.0, 1.0],
-            np.float32)
-            
-            mat_transform = matrix_mult(mat_translation,mat_rotation)    
-            
-            loc = glGetUniformLocation(program, "mat")
-            glUniformMatrix4fv(loc, 1, GL_TRUE, mat_transform)
+        #t_x += x_inc
+        #t_y += y_inc
+        #angle += r_inc
 
-            # cleaning color buffers
-            glClear(GL_COLOR_BUFFER_BIT) 
-            glClearColor(1.0, 1.0, 1.0, 1.0)
-        
-            #Draw 
-    
-            glDrawArrays(GL_LINE_STRIP, 0, len(vertices))
-            glfw.swap_interval(1)
-            glfw.swap_buffers(window)
-            print("t=", global_time)
-            print("v=", v_y)
-            print("a=", a_y)
-    
+        # getting translation by semi-implicit euler method
+        v_x += a_x*delta # velocity changes due to acceleration values
+        v_y += a_y*delta
+
+        t_x += v_x*delta # t_x,y represents position
+        t_y += v_y*delta
+
+        if t_y < 0.0:
+            a_y = 0.0
+            v_y = 0.0
+
+        c = math.cos( math.radians(angle) )
+        s = math.sin( math.radians(angle) )
+
+        # Applying transformations
+        mat_rotation = np.array(
+        [ c,  -s, 0.0, 0.0,
+          s,   c, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0], np.float32)
+
+        mat_translation = np.array(
+        [1.0, 0.0, 0.0, t_x,
+         0.0, 1.0, 0.0, t_y,
+         0.0, 0.0, 1.0, 0.0,
+         0.0, 0.0, 0.0, 1.0], np.float32)
+
+        _mat_transform = matrix_mult(mat_translation, mat_rotation)
+
+        mat_compress = np.array(
+        [1.0, 0.0, 0.0, 0.0,
+         0.0, 1.0/(com+1.0), 0.0, 0.0,
+         0.0, 0.0, 1.0, 0.0,
+         0.0, 0.0, 0.0, 1.0], np.float32)
+
+        mat_transform = matrix_mult(mat_compress, _mat_transform)
+
+        loc = glGetUniformLocation(program, "mat")
+        glUniformMatrix4fv(loc, 1, GL_TRUE, mat_transform)
+
+        # cleaning color buffers
+        glClear(GL_COLOR_BUFFER_BIT)
+        glClearColor(1.0, 1.0, 1.0, 1.0)
+
+        #Draw
+        glDrawArrays(GL_LINE_STRIP, 0, len(vertices))
+        glfw.swap_interval(1)
+        glfw.swap_buffers(window)
+        print("t=", global_time)
+        print("v=", v_y)
+        print("a=", a_y)
+        print(f"com = {com}")
+
+        # De-compress the spring
+        if not is_pressed and com > 0.0:
+            com -= 0.1
+
 glfw.terminate()
