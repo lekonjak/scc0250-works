@@ -115,7 +115,7 @@ com = 0.0
 is_pressed = False
 
 def key_event(window, key, scancode, action, mods):
-    global com, a_y, v_y, v_x, is_pressed
+    global com, a_y, v_y, v_x, is_pressed, r_inc
     if key == 264:
         is_pressed = True
         if com < 3:
@@ -124,8 +124,10 @@ def key_event(window, key, scancode, action, mods):
         if action == glfw.RELEASE:
             v_y = 1.1*com # Make the "jump" proportional to the compression
             v_x = 1.1*com
+            r_inc = 180/(2*v_x)
             if (math.floor(global_time*100000)%2) == 1:
                 v_x *= -1
+                r_inc *= -1
             a_y = -1
             is_pressed = False
     # quit simulation
@@ -174,14 +176,18 @@ while not glfw.window_should_close(window):
         # getting translation by semi-implicit euler method
         v_x += a_x*delta # velocity changes due to acceleration values
         v_y += a_y*delta
-
+        
+        angle += r_inc*delta
+        print( angle)
         t_x += v_x*delta # t_x,y represents position
         t_y += v_y*delta
-
+    
+    
         if t_y < 0.0:
             a_y = 0.0
             v_y = 0.0
             v_x = 0.0
+            r_inc = 0.0
 
         c = math.cos( math.radians(angle) )
         s = math.sin( math.radians(angle) )
