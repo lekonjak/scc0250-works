@@ -124,7 +124,7 @@ def key_event(window, key, scancode, action, mods):
         if action == glfw.RELEASE:
             v_y = 1.1 * com # Make the "jump" proportional to the compression
             v_x = 1.1 * com
-            r_inc = 180/(2*v_x)
+            r_inc = -180/(2*v_x)
             if (math.floor(global_time*100000)%2) == 1: # random direction to jump
                 v_x *= -1
                 r_inc *= -1
