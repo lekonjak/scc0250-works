@@ -1,7 +1,10 @@
-#   To test it:
-#   python -m venv project_dir
-#   pip install glfw numpy pyopengl
-#   python t1.py
+# Ricardo Alves de Araujo - 9364890
+# Tiago Esperança Triques - 9037713
+
+# To test it:
+# python3 -m venv project_dir
+# pip install glfw numpy pyopengl
+# python3 t1.py
 
 import glfw
 from OpenGL.GL import *
@@ -174,13 +177,12 @@ while not glfw.window_should_close(window):
         # getting translation by semi-implicit euler method
         v_x += a_x*delta # velocity changes due to acceleration values
         v_y += a_y*delta
-        
+
         angle += r_inc*delta
         print( angle)
         t_x += v_x*delta # t_x,y represents position
         t_y += v_y*delta
-    
-    
+
         if t_y < 0.0:
             a_y = 0.0
             v_y = 0.0
