@@ -115,7 +115,7 @@ com = 0.0
 is_pressed = False
 
 def key_event(window, key, scancode, action, mods):
-    global com, a_y, v_y, is_pressed
+    global com, a_y, v_y, v_x, is_pressed
     if key == 264:
         is_pressed = True
         if com < 3:
@@ -123,6 +123,9 @@ def key_event(window, key, scancode, action, mods):
 
         if action == glfw.RELEASE:
             v_y = 1.1*com # Make the "jump" proportional to the compression
+            v_x = 1.1*com
+            if (math.floor(global_time*100000)%2) == 1:
+                v_x *= -1
             a_y = -1
             is_pressed = False
     # quit simulation
@@ -178,6 +181,7 @@ while not glfw.window_should_close(window):
         if t_y < 0.0:
             a_y = 0.0
             v_y = 0.0
+            v_x = 0.0
 
         c = math.cos( math.radians(angle) )
         s = math.sin( math.radians(angle) )
