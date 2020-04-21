@@ -116,26 +116,24 @@ is_pressed = False
 
 def key_event(window, key, scancode, action, mods):
     global com, a_y, v_y, v_x, is_pressed, r_inc
-    if key == 264:
+    if key == glfw.KEY_DOWN:
         is_pressed = True
         if com < 3:
             com += 0.01
 
         if action == glfw.RELEASE:
-            v_y = 1.1*com # Make the "jump" proportional to the compression
-            v_x = 1.1*com
+            v_y = 1.1 * com # Make the "jump" proportional to the compression
+            v_x = 1.1 * com
             r_inc = 180/(2*v_x)
-            if (math.floor(global_time*100000)%2) == 1:
+            if (math.floor(global_time*100000)%2) == 1: # random direction to jump
                 v_x *= -1
                 r_inc *= -1
             a_y = -1
             is_pressed = False
-    # quit simulation
-    if key == ord('q'):
-        glfw.set_window_should_close(window, True)
 
-    if key == ord('r'):
-        print('how do I reset?')
+    # quit simulation
+    if key == glfw.KEY_Q:
+        glfw.set_window_should_close(window, True)
 
 glfw.set_key_callback(window, key_event)
 
