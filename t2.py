@@ -14,11 +14,12 @@ from PIL import Image
 
 glfw.init()
 glfw.window_hint(glfw.VISIBLE, glfw.TRUE);
-glfw.window_hint(glfw.MAXIMIZED, glfw.TRUE)
-altura = 1920
-largura = 1080
+#glfw.window_hint(glfw.MAXIMIZED, glfw.TRUE)
+altura = 768
+largura = 768
 window = glfw.create_window(largura, altura, "T2", None, None)
 glfw.make_context_current(window)
+glfw.set_window_pos(window, int(1366/4), 0)
 
 #}}}
 #{{{GLSL
@@ -87,8 +88,8 @@ glUseProgram(program)
 #}}}
 #{{{ AUX
 
+# Retirado do exemplo de aula
 def load_model_from_file(filename):
-    """Loads a Wavefront OBJ file. """
     objects = {}
     vertices = []
     texture_coords = []
@@ -96,21 +97,17 @@ def load_model_from_file(filename):
 
     material = None
 
-    # abre o arquivo obj para leitura
-    for line in open(filename, "r"): ## para cada linha do arquivo .obj
-        if line.startswith('#'): continue ## ignora comentarios
-        values = line.split() # quebra a linha por espaço
+    for line in open(filename, "r"):
+        if line.startswith('#'): continue
+        values = line.split()
         if not values: continue
 
-        ### recuperando vertices
         if values[0] == 'v':
             vertices.append(values[1:4])
 
-        ### recuperando coordenadas de textura
         elif values[0] == 'vt':
             texture_coords.append(values[1:3])
 
-        ### recuperando faces
         elif values[0] in ('usemtl', 'usemat'):
             material = values[1]
         elif values[0] == 'f':
@@ -140,24 +137,25 @@ def load_texture_from_file(texture_id, img_textura):
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     img = Image.open(img_textura)
-    print(img_textura,img.mode)
-    img_width = img.size[0]
-    img_height = img.size[1]
-    #image_data = img.tobytes("raw", "RGB", 0, -1)
-    image_data = img.convert("RGBA").tobytes("raw", "RGBA",0,-1)
+    img_width, img_height = img.size
+    image_data = img.convert("RGBA").tobytes("raw", "RGBA", 0, -1)
 
-    #image_data = np.array(list(img.getdata()), np.uint8)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_width, img_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data)
 
 #}}}
 #{{{ RANDOM GLOBAL VARIABLES
-sizes = {}
+
+texture_count = 0
+modelos = {}
+
 #}}}
 #{{{ LOAD MODEL AND TEXTURES
 
+# Enable textures, allocate memory
 glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE)
-glEnable( GL_BLEND )
-glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA )
+glEnable(GL_BLEND)
+glDisable(GL_CULL_FACE)
+glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 glEnable(GL_LINE_SMOOTH)
 glEnable(GL_TEXTURE_2D)
 qtd_texturas = 10
@@ -166,17 +164,37 @@ textures = glGenTextures(qtd_texturas)
 vertices_list = []
 textures_coord_list = []
 
-modelo = load_model_from_file('untitled.obj')
-
-sizes['untitled'] = {}
-sizes['untitled']['start'] = len(vertices_list)
-print('Processando modelo untitled.obj')
+# Carrega o terreno
+modelo = load_model_from_file('models/terrain/terreno.obj')
+modelos['terreno'] = {}
+modelos['terreno']['start'] = len(vertices_list)
+print('Processando modelo terreno.obj')
 for face in modelo['faces']:
     for vertice_id in face[0]:
-        vertices_list.append( modelo['vertices'][vertice_id-1] )
+        vertices_list.append(modelo['vertices'][vertice_id-1])
     for texture_id in face[1]:
-        textures_coord_list.append( modelo['texture'][texture_id-1] )
-sizes['untitled']['end'] = len(vertices_list)
+        textures_coord_list.append(modelo['texture'][texture_id-1])
+modelos['terreno']['size'] = len(vertices_list) - modelos['terreno']['start']
+modelos['terreno']['texture_id'] = texture_count
+load_texture_from_file(modelos['terreno']['texture_id'], 'models/terrain/grass.jpg')
+texture_count += 1
+
+# Carrega a casa
+modelo = load_model_from_file('models/house/medieval house.obj')
+modelos['casa'] = {}
+modelos['casa']['start'] = len(vertices_list)
+print('Processando modelo casa.obj')
+for face in modelo['faces']:
+    for vertice_id in face[0]:
+        vertices_list.append(modelo['vertices'][vertice_id-1])
+    for texture_id in face[1]:
+        textures_coord_list.append(modelo['texture'][texture_id-1])
+modelos['casa']['size'] = len(vertices_list) - modelos['casa']['start']
+modelos['casa']['texture_id'] = texture_count
+load_texture_from_file(modelos['casa']['texture_id'], 'models/house/house2.png')
+texture_count += 1
+
+print(modelos)
 
 # Request a buffer slot from GPU
 buffer = glGenBuffers(2)
@@ -218,7 +236,7 @@ def key_event(window,key,scancode,action,mods):
     global cameraPos, cameraFront, cameraUp, wireframe
 
     # quit simulation
-    if key == glfw.KEY_Q and action == glfw.PRESS:
+    if (key == glfw.KEY_Q or key == glfw.KEY_ESCAPE) and action == glfw.PRESS:
         glfw.set_window_should_close(window, True)
 
     cameraSpeed = 0.15
@@ -275,8 +293,6 @@ def mouse_event(window, xpos, ypos):
     front.z = math.sin(glm.radians(yaw)) * math.cos(glm.radians(pitch))
     cameraFront = glm.normalize(front)
 
-
-
 glfw.set_key_callback(window,key_event)
 glfw.set_cursor_pos_callback(window, mouse_event)
 # Disable the cursor, making it always centered
@@ -284,17 +300,6 @@ glfw.set_input_mode(window, glfw.CURSOR, glfw.CURSOR_DISABLED)
 
 #}}}
 #{{{ DRAW FUNCTIONS
-
-def desenha_caixa():
-    angle = 0.0;
-    r_x = 0.0; r_y = 0.0; r_z = 1.0;
-    t_x = 0.0; t_y = 0.0; t_z = 0.0;
-    s_x = 0.01; s_y = 0.01; s_z = 0.01;
-    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
-    loc_model = glGetUniformLocation(program, "model")
-    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
-    glBindTexture(GL_TEXTURE_2D, 0)
-    glDrawArrays(GL_TRIANGLES, sizes['untitled']['start'], sizes['untitled']['end']-sizes['untitled']['start'])
 
 def desenha_terreno():
     angle = 0.0;
@@ -304,19 +309,30 @@ def desenha_terreno():
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
-    glBindTexture(GL_TEXTURE_2D, 1)
-    glDrawArrays(GL_TRIANGLES, 36, 42-36)
+    glBindTexture(GL_TEXTURE_2D, modelos['terreno']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['terreno']['start'], modelos['terreno']['size'])
 
 def desenha_casa():
     angle = 0.0;
     r_x = 0.0; r_y = 0.0; r_z = 1.0;
-    t_x = 0.0; t_y = -1.0; t_z = 0.0;
-    s_x = 1.0; s_y = 1.0; s_z = 1.0;
+    t_x = 0.0; t_y = -1.01; t_z = 0.0;
+    s_x = 0.5; s_y = 0.5; s_z = 0.5;
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
-    glBindTexture(GL_TEXTURE_2D, 2)
-    glDrawArrays(GL_TRIANGLES, 42, 1476-42)
+    glBindTexture(GL_TEXTURE_2D, modelos['casa']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['casa']['start'], modelos['casa']['size'])
+
+def desenha_mesa():
+    angle = 0.0;
+    r_x = 0.0; r_y = 0.0; r_z = 1.0;
+    t_x = 0.0; t_y = -1.01; t_z = 0.0;
+    s_x = 0.5; s_y = 0.5; s_z = 0.5;
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    glBindTexture(GL_TEXTURE_2D, modelos['mesa']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['mesa']['start'], modelos['mesa']['size'])
 
 #}}}
 #{{{ MODEL VIEW PROJECTION
@@ -345,18 +361,20 @@ def projection():
 #{{{ LOOP
 
 glfw.show_window(window)
-glfw.set_cursor_pos(window, lastX, lastY)
+glfw.set_cursor_pos(window, largura/2, altura/2)
 
 glEnable(GL_DEPTH_TEST)
 
 while not glfw.window_should_close(window):
     glfw.poll_events()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glClearColor(1.0, 1.0, 1.0, 1.0)
+    glClearColor(0.68, 0.85, 0.9, 1.0)
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE if wireframe else GL_FILL)
 
-    desenha_caixa()
+    desenha_terreno()
+    desenha_casa()
+    desenha_mesa()
 
     mat_view = view()
     loc_view = glGetUniformLocation(program, "view")
