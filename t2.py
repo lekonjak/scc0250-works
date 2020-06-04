@@ -175,7 +175,7 @@ for face in modelo['faces']:
         textures_coord_list.append(modelo['texture'][texture_id-1])
 modelos['terreno']['size'] = len(vertices_list) - modelos['terreno']['start']
 modelos['terreno']['texture_id'] = texture_count
-load_texture_from_file(modelos['terreno']['texture_id'], 'models/terrain/grass.jpg')
+load_texture_from_file(modelos['terreno']['texture_id'], 'models/terrain/chess.jpg')
 texture_count += 1
 
 # Carrega a casa
