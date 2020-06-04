@@ -104,10 +104,8 @@ def load_model_from_file(filename):
 
         if values[0] == 'v':
             vertices.append(values[1:4])
-
         elif values[0] == 'vt':
             texture_coords.append(values[1:3])
-
         elif values[0] in ('usemtl', 'usemat'):
             material = values[1]
         elif values[0] == 'f':
@@ -167,6 +165,7 @@ textures_coord_list = []
 # Carrega o terreno
 modelo = load_model_from_file('models/terrain/terreno.obj')
 modelos['terreno'] = {}
+modelos['terreno']['n_texturas'] = 1
 modelos['terreno']['start'] = len(vertices_list)
 print('Processando modelo terreno.obj')
 for face in modelo['faces']:
@@ -182,6 +181,7 @@ texture_count += 1
 # Carrega a casa
 modelo = load_model_from_file('models/house/medieval house.obj')
 modelos['casa'] = {}
+modelos['casa']['n_texturas'] = 1
 modelos['casa']['start'] = len(vertices_list)
 print('Processando modelo casa.obj')
 for face in modelo['faces']:
@@ -239,7 +239,7 @@ def key_event(window,key,scancode,action,mods):
     if (key == glfw.KEY_Q or key == glfw.KEY_ESCAPE) and action == glfw.PRESS:
         glfw.set_window_should_close(window, True)
 
-    cameraSpeed = 0.15
+    cameraSpeed = 0.3
     if key == glfw.KEY_W and (action == glfw.PRESS or
                               action == glfw.REPEAT):
         cameraPos += cameraSpeed * cameraFront
@@ -305,7 +305,7 @@ def desenha_terreno():
     angle = 0.0;
     r_x = 0.0; r_y = 0.0; r_z = 1.0;
     t_x = 0.0; t_y = -1.01; t_z = 0.0;
-    s_x = 20.0; s_y = 20.0; s_z = 20.0;
+    s_x = 50.0; s_y = 50.0; s_z = 50.0;
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
@@ -315,7 +315,7 @@ def desenha_terreno():
 def desenha_casa():
     angle = 0.0;
     r_x = 0.0; r_y = 0.0; r_z = 1.0;
-    t_x = 0.0; t_y = -1.01; t_z = 0.0;
+    t_x = 0.0; t_y = -1.01; t_z = -10.0;
     s_x = 0.5; s_y = 0.5; s_z = 0.5;
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
@@ -343,7 +343,7 @@ def view():
 
 def projection():
     global altura, largura
-    mat_projection = glm.perspective(glm.radians(45.0), largura/altura, 0.1, 1000.0)
+    mat_projection = glm.perspective(glm.radians(90.0), largura/altura, 0.1, 1000.0)
     mat_projection = np.array(mat_projection)
     return mat_projection
 #}}}
