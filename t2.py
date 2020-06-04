@@ -323,17 +323,6 @@ def desenha_casa():
     glBindTexture(GL_TEXTURE_2D, modelos['casa']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['casa']['start'], modelos['casa']['size'])
 
-def desenha_mesa():
-    angle = 0.0;
-    r_x = 0.0; r_y = 0.0; r_z = 1.0;
-    t_x = 0.0; t_y = -1.01; t_z = 0.0;
-    s_x = 0.5; s_y = 0.5; s_z = 0.5;
-    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
-    loc_model = glGetUniformLocation(program, "model")
-    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
-    glBindTexture(GL_TEXTURE_2D, modelos['mesa']['texture_id'])
-    glDrawArrays(GL_TRIANGLES, modelos['mesa']['start'], modelos['mesa']['size'])
-
 #}}}
 #{{{ MODEL VIEW PROJECTION
 
@@ -374,7 +363,6 @@ while not glfw.window_should_close(window):
 
     desenha_terreno()
     desenha_casa()
-    desenha_mesa()
 
     mat_view = view()
     loc_view = glGetUniformLocation(program, "view")
