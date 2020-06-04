@@ -146,6 +146,15 @@ def load_texture_from_file(texture_id, img_textura):
 texture_count = 0
 modelos = {}
 
+scale = {}
+scale['terreno'] = 1024
+scale['casa'] = 1
+scale['pessoa'] = 1
+
+cameraSpeed = 2
+sensitivity = 0.15
+
+
 #}}}
 #{{{ LOAD MODEL AND TEXTURES
 
@@ -194,6 +203,22 @@ modelos['casa']['texture_id'] = texture_count
 load_texture_from_file(modelos['casa']['texture_id'], 'models/house/house2.png')
 texture_count += 1
 
+# Carrega a pessoa
+modelo = load_model_from_file('models/person/denis_30k.obj')
+modelos['person'] = {}
+modelos['person']['n_texturas'] = 1
+modelos['person']['start'] = len(vertices_list)
+print('Processando modelo person.obj')
+for face in modelo['faces']:
+    for vertice_id in face[0]:
+        vertices_list.append(modelo['vertices'][vertice_id-1])
+    for texture_id in face[1]:
+        textures_coord_list.append(modelo['texture'][texture_id-1])
+modelos['person']['size'] = len(vertices_list) - modelos['person']['start']
+modelos['person']['texture_id'] = texture_count
+load_texture_from_file(modelos['person']['texture_id'], 'models/person/denis.jpg')
+texture_count += 1
+
 print(modelos)
 
 # Request a buffer slot from GPU
@@ -233,13 +258,13 @@ cameraUp    = glm.vec3(0.0,  1.0,  0.0);
 wireframe = False
 
 def key_event(window,key,scancode,action,mods):
-    global cameraPos, cameraFront, cameraUp, wireframe
+    global cameraPos, cameraFront, cameraUp
+    global wireframe, scale, cameraSpeed
 
     # quit simulation
     if (key == glfw.KEY_Q or key == glfw.KEY_ESCAPE) and action == glfw.PRESS:
         glfw.set_window_should_close(window, True)
 
-    cameraSpeed = 0.3
     if key == glfw.KEY_W and (action == glfw.PRESS or
                               action == glfw.REPEAT):
         cameraPos += cameraSpeed * cameraFront
@@ -259,6 +284,19 @@ def key_event(window,key,scancode,action,mods):
     if key == glfw.KEY_P and action == glfw.PRESS:
         wireframe = not wireframe
 
+    if key == glfw.KEY_O and (action == glfw.PRESS or action == glfw.REPEAT):
+        scale['pessoa'] += 0.01
+    if key == glfw.KEY_L and (action == glfw.PRESS or action == glfw.REPEAT):
+        scale['pessoa'] -= 0.01
+    if key == glfw.KEY_I and (action == glfw.PRESS or action == glfw.REPEAT):
+        scale['casa'] += 0.1
+    if key == glfw.KEY_K and (action == glfw.PRESS or action == glfw.REPEAT):
+        scale['casa'] -= 0.1
+    if key == glfw.KEY_U and (action == glfw.PRESS or action == glfw.REPEAT):
+        scale['terreno'] += 2
+    if key == glfw.KEY_J and (action == glfw.PRESS or action == glfw.REPEAT):
+        scale['terreno'] -= 2
+
 firstMouse = True
 yaw = -90.0
 pitch = 0.0
@@ -267,6 +305,8 @@ lastY =  altura/2
 
 def mouse_event(window, xpos, ypos):
     global firstMouse, cameraFront, yaw, pitch, lastX, lastY
+    global sensitivity
+
     if firstMouse:
         lastX = xpos
         lastY = ypos
@@ -301,27 +341,50 @@ glfw.set_input_mode(window, glfw.CURSOR, glfw.CURSOR_DISABLED)
 #}}}
 #{{{ DRAW FUNCTIONS
 
-def desenha_terreno():
+def desenha_terreno(scale):
     angle = 0.0;
     r_x = 0.0; r_y = 0.0; r_z = 1.0;
     t_x = 0.0; t_y = -1.01; t_z = 0.0;
-    s_x = 50.0; s_y = 50.0; s_z = 50.0;
+    s_x = s_y = s_z = scale
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     glBindTexture(GL_TEXTURE_2D, modelos['terreno']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['terreno']['start'], modelos['terreno']['size'])
 
-def desenha_casa():
-    angle = 0.0;
-    r_x = 0.0; r_y = 0.0; r_z = 1.0;
-    t_x = 0.0; t_y = -1.01; t_z = -10.0;
-    s_x = 0.5; s_y = 0.5; s_z = 0.5;
+def desenha_casa(scale):
+    angle = 0.0
+    r_x = 0.0; r_y = 0.0; r_z = 1.0
+    t_x = 0.0; t_y = -1.01; t_z = -20.0
+    s_x = s_y = s_z = scale;
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     glBindTexture(GL_TEXTURE_2D, modelos['casa']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['casa']['start'], modelos['casa']['size'])
+
+def desenha_pessoa(scale):
+    angle = 0.0;
+    r_x = 0.0; r_y = 0.0; r_z = 1.0
+    t_x = 0.0; t_y = -1.01; t_z = -20.0
+    s_x = s_y = s_z = scale
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    glBindTexture(GL_TEXTURE_2D, modelos['person']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['person']['start'], modelos['person']['size'])
+
+def desenha_palmeira(scale):
+    angle = 0.0;
+    r_x = 0.0; r_y = 0.0; r_z = 1.0;
+    t_x = 0.0; t_y = -1.01; t_z = -20.0;
+    s_x = s_y = s_z = scale
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    glBindTexture(GL_TEXTURE_2D, modelos['palm']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['palm']['start'], modelos['palm']['size'])
+
 
 #}}}
 #{{{ MODEL VIEW PROJECTION
@@ -361,8 +424,9 @@ while not glfw.window_should_close(window):
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE if wireframe else GL_FILL)
 
-    desenha_terreno()
-    desenha_casa()
+    desenha_terreno(scale['terreno'])
+    desenha_casa(scale['casa'])
+    desenha_pessoa(scale['pessoa'])
 
     mat_view = view()
     loc_view = glGetUniformLocation(program, "view")
@@ -373,6 +437,8 @@ while not glfw.window_should_close(window):
     glUniformMatrix4fv(loc_projection, 1, GL_FALSE, mat_projection)
 
     glfw.swap_buffers(window)
+
+print(scale)
 
 glfw.terminate()
 #}}}
