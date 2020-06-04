@@ -17,7 +17,7 @@ glfw.window_hint(glfw.VISIBLE, glfw.TRUE);
 glfw.window_hint(glfw.MAXIMIZED, glfw.TRUE)
 altura = 1920
 largura = 1080
-window = glfw.create_window(largura, altura, "Malhas e Texturas", None, None)
+window = glfw.create_window(largura, altura, "T2", None, None)
 glfw.make_context_current(window)
 
 #}}}
@@ -102,11 +102,9 @@ def load_model_from_file(filename):
         values = line.split() # quebra a linha por espaço
         if not values: continue
 
-
         ### recuperando vertices
         if values[0] == 'v':
             vertices.append(values[1:4])
-
 
         ### recuperando coordenadas de textura
         elif values[0] == 'vt':
@@ -170,15 +168,15 @@ textures_coord_list = []
 
 modelo = load_model_from_file('untitled.obj')
 
-start_index = len(vertices_list)
+sizes['untitled'] = {}
+sizes['untitled']['start'] = len(vertices_list)
 print('Processando modelo untitled.obj')
 for face in modelo['faces']:
     for vertice_id in face[0]:
         vertices_list.append( modelo['vertices'][vertice_id-1] )
     for texture_id in face[1]:
         textures_coord_list.append( modelo['texture'][texture_id-1] )
-end_index = len(vertices_list)
-sizes['untitled'] = end_index - start_index
+sizes['untitled']['end'] = len(vertices_list)
 
 # Request a buffer slot from GPU
 buffer = glGenBuffers(2)
@@ -214,35 +212,34 @@ cameraPos   = glm.vec3(0.0,  0.0,  1.0);
 cameraFront = glm.vec3(0.0,  0.0, -1.0);
 cameraUp    = glm.vec3(0.0,  1.0,  0.0);
 
-polygonal_mode = False
+wireframe = False
 
 def key_event(window,key,scancode,action,mods):
-    global cameraPos, cameraFront, cameraUp, polygonal_mode
+    global cameraPos, cameraFront, cameraUp, wireframe
 
     # quit simulation
     if key == glfw.KEY_Q and action == glfw.PRESS:
         glfw.set_window_should_close(window, True)
 
-    cameraSpeed = 0.2
-    if key == 87 and (action==1 or action==2): # tecla W
+    cameraSpeed = 0.15
+    if key == glfw.KEY_W and (action == glfw.PRESS or
+                              action == glfw.REPEAT):
         cameraPos += cameraSpeed * cameraFront
 
-    if key == 83 and (action==1 or action==2): # tecla S
+    if key == glfw.KEY_S and (action == glfw.PRESS or
+                              action == glfw.REPEAT):
         cameraPos -= cameraSpeed * cameraFront
 
-    if key == 65 and (action==1 or action==2): # tecla A
+    if key == glfw.KEY_A and (action == glfw.PRESS or
+                              action == glfw.REPEAT):
         cameraPos -= glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
 
-    if key == 68 and (action==1 or action==2): # tecla D
+    if key == glfw.KEY_D and (action == glfw.PRESS or
+                              action == glfw.REPEAT):
         cameraPos += glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
 
-    if key == 80 and action==1 and polygonal_mode==True:
-        polygonal_mode=False
-    else:
-        if key == 80 and action==1 and polygonal_mode==False:
-            polygonal_mode=True
-
-
+    if key == glfw.KEY_P and action == glfw.PRESS:
+        wireframe = not wireframe
 
 firstMouse = True
 yaw = -90.0
@@ -262,13 +259,12 @@ def mouse_event(window, xpos, ypos):
     lastX = xpos
     lastY = ypos
 
-    sensitivity = 0.3
+    sensitivity = 0.15
     xoffset *= sensitivity
     yoffset *= sensitivity
 
     yaw += xoffset;
     pitch += yoffset;
-
 
     if pitch >= 90.0: pitch = 90.0
     if pitch <= -90.0: pitch = -90.0
@@ -283,6 +279,7 @@ def mouse_event(window, xpos, ypos):
 
 glfw.set_key_callback(window,key_event)
 glfw.set_cursor_pos_callback(window, mouse_event)
+# Disable the cursor, making it always centered
 glfw.set_input_mode(window, glfw.CURSOR, glfw.CURSOR_DISABLED)
 
 #}}}
@@ -297,7 +294,7 @@ def desenha_caixa():
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     glBindTexture(GL_TEXTURE_2D, 0)
-    glDrawArrays(GL_TRIANGLES, 0, sizes['untitled'])
+    glDrawArrays(GL_TRIANGLES, sizes['untitled']['start'], sizes['untitled']['end']-sizes['untitled']['start'])
 
 def desenha_terreno():
     angle = 0.0;
@@ -357,7 +354,7 @@ while not glfw.window_should_close(window):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glClearColor(1.0, 1.0, 1.0, 1.0)
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE if polygonal_mode else GL_FILL)
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE if wireframe else GL_FILL)
 
     desenha_caixa()
 
