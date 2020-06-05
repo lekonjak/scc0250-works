@@ -2,8 +2,7 @@
 # Tiago Esperança Triques - 9037713
 
 To run it:
-
-    python3 -m venv project_dir
+    python3 -m venv .
     source bin/activate
-    pip install glfw numpy pyopengl
-    python3 t1.py
+    pip install -r requirements.txt
+    python3 <file.py>

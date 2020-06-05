@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+
+# Ricardo Alves de Araujo - 9364890
+# Tiago Esperança Triques - 9037713
+
 #{{{ IMPORTS
 
 import glfw
@@ -647,4 +651,3 @@ while not glfw.window_should_close(window):
 
 glfw.terminate()
 #}}}
-
