@@ -8,6 +8,10 @@ import numpy as np
 import glm
 import math
 from PIL import Image
+import simpleaudio as sa
+
+wave_obj = sa.WaveObject.from_wave_file("media/floral.wav")
+play_obj = wave_obj.play()
 
 #}}}
 #{{{WINDOW INIT
