@@ -10,8 +10,6 @@ import math
 from PIL import Image
 import simpleaudio as sa
 
-wave_obj = sa.WaveObject.from_wave_file("media/floral.wav")
-play_obj = wave_obj.play()
 
 #}}}
 #{{{WINDOW INIT
@@ -307,10 +305,27 @@ for face in modelo['faces']:
         vertices_list.append(modelo['vertices'][vertice_id-1])
     for texture_id in face[1]:
         textures_coord_list.append(modelo['texture'][texture_id-1])
-modelos['deer']['size'] = len(vertices_list) - modelos['tree']['start']
+modelos['deer']['size'] = len(vertices_list) - modelos['deer']['start']
 modelos['deer']['texture_id'] = texture_count
 load_texture_from_file(modelos['deer']['texture_id'], 'models/deer/Diffuse.jpg')
 texture_count += 1
+
+# Bench
+modelo = load_model_from_file('models/bench/uploads_files_839016_OutdoorParkBenches(1).obj')
+modelos['bench'] = {}
+modelos['bench']['n_texturas'] = 2
+modelos['bench']['start'] = len(vertices_list)
+print('Processando modelo bench.obj')
+for face in modelo['faces']:
+    for vertice_id in face[0]:
+        vertices_list.append(modelo['vertices'][vertice_id-1])
+    for texture_id in face[1]:
+        textures_coord_list.append(modelo['texture'][texture_id-1])
+modelos['bench']['size'] = len(vertices_list) - modelos['bench']['start']
+modelos['bench']['texture_id'] = texture_count
+load_texture_from_file(modelos['bench']['texture_id'], 'models/bench/OutdoorParkBenches_woods_BaseColor.png')
+load_texture_from_file(modelos['bench']['texture_id']+1, 'models/bench/OutdoorParkBenches_Steel_BaseColor.png')
+texture_count += 2
 
 print(modelos)
 
@@ -550,6 +565,19 @@ def draw_deer(angle):
     glBindTexture(GL_TEXTURE_2D, modelos['deer']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['deer']['start'], modelos['deer']['size'])
 
+def draw_bench():
+    angle = 0
+    r_x = 0.0; r_y = 1.0; r_z = 0.0
+    t_x = -330.0; t_y = 2.0; t_z = 350.0
+    s_x = s_y = s_z = 50
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    glBindTexture(GL_TEXTURE_2D, modelos['bench']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['bench']['start'], modelos['bench']['size'])
+    glBindTexture(GL_TEXTURE_2D, modelos['bench']['texture_id']+1)
+    glDrawArrays(GL_TRIANGLES, modelos['bench']['start'], modelos['bench']['size'])
+
 #}}}
 #{{{ MODEL VIEW PROJECTION
 
@@ -583,7 +611,8 @@ glfw.set_cursor_pos(window, largura/2, altura/2)
 
 glEnable(GL_DEPTH_TEST)
 
-last_time = glfw.get_time()
+wave_obj = sa.WaveObject.from_wave_file("media/floral.wav")
+play_obj = wave_obj.play()
 
 while not glfw.window_should_close(window):
     glfw.poll_events()
@@ -602,6 +631,7 @@ while not glfw.window_should_close(window):
     draw_tree_1()
     draw_tree_2()
     draw_tree_3()
+    draw_bench()
     draw_deer(deer_angle)
     deer_angle += 0.5
 
@@ -617,3 +647,4 @@ while not glfw.window_should_close(window):
 
 glfw.terminate()
 #}}}
+
