@@ -173,7 +173,7 @@ vertices_list = []
 textures_coord_list = []
 
 # Skybox?
-modelo = load_model_from_file('models/skybox/untitled.obj')
+modelo = load_model_from_file('models/skybox/new.obj')
 modelos['skybox'] = {}
 modelos['skybox']['n_texturas'] = 1
 modelos['skybox']['start'] = len(vertices_list)
@@ -184,7 +184,7 @@ for face in modelo['faces']:
         textures_coord_list.append(modelo['texture'][texture_id-1])
 modelos['skybox']['size'] = len(vertices_list) - modelos['skybox']['start']
 modelos['skybox']['texture_id'] = texture_count
-load_texture_from_file(modelos['skybox']['texture_id'], 'models/skybox/blue.png')
+load_texture_from_file(modelos['skybox']['texture_id'], 'models/skybox/Daylight Box.png')
 texture_count += 1
 
 
@@ -231,11 +231,11 @@ for face in modelo['faces']:
         textures_coord_list.append(modelo['texture'][texture_id-1])
 modelos['house']['size'] = len(vertices_list) - modelos['house']['start']
 modelos['house']['texture_id'] = texture_count
-load_texture_from_file(modelos['house']['texture_id'], 'models/house/Hut_Low_lambert1_AlbedoTransparency.png')
+load_texture_from_file(modelos['house']['texture_id'], 'models/house/Hut_Low_lambert1_AlbedoTransparency.jpg')
 texture_count += 1
 
 # Denis
-modelo = load_model_from_file('models/person/denis.obj')
+modelo = load_model_from_file('models/person/denis_30k.obj')
 modelos['person'] = {}
 modelos['person']['n_texturas'] = 1
 modelos['person']['start'] = len(vertices_list)
@@ -263,7 +263,7 @@ for face in modelo['faces']:
         textures_coord_list.append(modelo['texture'][texture_id-1])
 modelos['uganda_knuckles']['size'] = len(vertices_list) - modelos['uganda_knuckles']['start']
 modelos['uganda_knuckles']['texture_id'] = texture_count
-load_texture_from_file(modelos['uganda_knuckles']['texture_id'], 'models/uganda/Knuckles_Texture.png')
+load_texture_from_file(modelos['uganda_knuckles']['texture_id'], 'models/uganda/Knuckles_Texture.jpg')
 texture_count += 1
 
 # Statue
@@ -295,7 +295,7 @@ for face in modelo['faces']:
         textures_coord_list.append(modelo['texture'][texture_id-1])
 modelos['tree']['size'] = len(vertices_list) - modelos['tree']['start']
 modelos['tree']['texture_id'] = texture_count
-load_texture_from_file(modelos['tree']['texture_id'], 'models/tree/_6_tree.png')
+load_texture_from_file(modelos['tree']['texture_id'], 'models/tree/_6_tree.jpg')
 texture_count += 1
 
 # Deer
@@ -327,8 +327,7 @@ for face in modelo['faces']:
         textures_coord_list.append(modelo['texture'][texture_id-1])
 modelos['bench']['size'] = len(vertices_list) - modelos['bench']['start']
 modelos['bench']['texture_id'] = texture_count
-load_texture_from_file(modelos['bench']['texture_id'], 'models/bench/OutdoorParkBenches_woods_BaseColor.png')
-load_texture_from_file(modelos['bench']['texture_id']+1, 'models/bench/OutdoorParkBenches_Steel_BaseColor.png')
+load_texture_from_file(modelos['bench']['texture_id'], 'models/bench/OutdoorParkBenches_woods_BaseColor.jpg')
 texture_count += 2
 
 print(modelos)
@@ -452,7 +451,7 @@ glfw.set_input_mode(window, glfw.CURSOR, glfw.CURSOR_DISABLED)
 def draw_skybox():
     angle = 0.0;
     r_x = 0.0; r_y = 1.0; r_z = 0.0;
-    t_x = 0.0; t_y = 1000.0; t_z = 0.0;
+    t_x = 0.0; t_y = 0.0; t_z = 0.0;
     s_x = 1024; s_z = 1024; s_y = 1024;
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
@@ -578,8 +577,6 @@ def draw_bench():
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     glBindTexture(GL_TEXTURE_2D, modelos['bench']['texture_id'])
-    glDrawArrays(GL_TRIANGLES, modelos['bench']['start'], modelos['bench']['size'])
-    glBindTexture(GL_TEXTURE_2D, modelos['bench']['texture_id']+1)
     glDrawArrays(GL_TRIANGLES, modelos['bench']['start'], modelos['bench']['size'])
 
 #}}}
