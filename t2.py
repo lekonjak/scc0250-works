@@ -233,6 +233,21 @@ modelos['uganda_knuckles']['texture_id'] = texture_count
 load_texture_from_file(modelos['uganda_knuckles']['texture_id'], 'models/uganda/Knuckles_Texture.png')
 texture_count += 1
 
+modelo = load_model_from_file('models/onepiece/uploads_files_979927_Buggy_01.obj')
+modelos['buggy'] = {}
+modelos['buggy']['n_texturas'] = 1
+modelos['buggy']['start'] = len(vertices_list)
+print('Processando modelo buggy.obj')
+for face in modelo['faces']:
+    for vertice_id in face[0]:
+        vertices_list.append(modelo['vertices'][vertice_id-1])
+    for texture_id in face[1]:
+        textures_coord_list.append(modelo['texture'][texture_id-1])
+modelos['buggy']['size'] = len(vertices_list) - modelos['buggy']['start']
+modelos['buggy']['texture_id'] = texture_count
+load_texture_from_file(modelos['buggy']['texture_id'], 'models/onepiece/Buggy_01.jpg')
+texture_count += 1
+
 print(modelos)
 
 # Request a buffer slot from GPU
@@ -408,6 +423,17 @@ def draw_uganda_knuckles(scale):
     glBindTexture(GL_TEXTURE_2D, modelos['uganda_knuckles']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['uganda_knuckles']['start'], modelos['uganda_knuckles']['size'])
 
+def draw_buggy(scale):
+    angle = 0.0;
+    r_x = 0.0; r_y = 0.0; r_z = 1.0
+    t_x = 0.0; t_y = 50.0; t_z = 0.0
+    s_x = s_y = s_z = scale
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    glBindTexture(GL_TEXTURE_2D, modelos['buggy']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['buggy']['start'], modelos['buggy']['size'])
+
 #}}}
 #{{{ MODEL VIEW PROJECTION
 
@@ -450,6 +476,7 @@ while not glfw.window_should_close(window):
     draw_house(scale['house'])
     draw_person(scale['person'])
     draw_uganda_knuckles(10)
+    draw_buggy(10)
 
     mat_view = view()
     loc_view = glGetUniformLocation(program, "view")
