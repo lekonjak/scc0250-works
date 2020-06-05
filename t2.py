@@ -147,13 +147,12 @@ texture_count = 0
 modelos = {}
 
 scale = {}
-scale['terreno'] = 1024
-scale['casa'] = 1
-scale['pessoa'] = 1
+scale['terrain'] = 1024
+scale['house'] = 32
+scale['person'] = 0.65
 
 cameraSpeed = 2
 sensitivity = 0.15
-
 
 #}}}
 #{{{ LOAD MODEL AND TEXTURES
@@ -171,39 +170,39 @@ textures = glGenTextures(qtd_texturas)
 vertices_list = []
 textures_coord_list = []
 
-# Carrega o terreno
+# Carrega o terrain
 modelo = load_model_from_file('models/terrain/terreno.obj')
-modelos['terreno'] = {}
-modelos['terreno']['n_texturas'] = 1
-modelos['terreno']['start'] = len(vertices_list)
+modelos['terrain'] = {}
+modelos['terrain']['n_texturas'] = 1
+modelos['terrain']['start'] = len(vertices_list)
 print('Processando modelo terreno.obj')
 for face in modelo['faces']:
     for vertice_id in face[0]:
         vertices_list.append(modelo['vertices'][vertice_id-1])
     for texture_id in face[1]:
         textures_coord_list.append(modelo['texture'][texture_id-1])
-modelos['terreno']['size'] = len(vertices_list) - modelos['terreno']['start']
-modelos['terreno']['texture_id'] = texture_count
-load_texture_from_file(modelos['terreno']['texture_id'], 'models/terrain/chess.jpg')
+modelos['terrain']['size'] = len(vertices_list) - modelos['terrain']['start']
+modelos['terrain']['texture_id'] = texture_count
+load_texture_from_file(modelos['terrain']['texture_id'], 'models/terrain/chess.jpg')
 texture_count += 1
 
-# Carrega a casa
+# Carrega a house
 modelo = load_model_from_file('models/house/medieval house.obj')
-modelos['casa'] = {}
-modelos['casa']['n_texturas'] = 1
-modelos['casa']['start'] = len(vertices_list)
-print('Processando modelo casa.obj')
+modelos['house'] = {}
+modelos['house']['n_texturas'] = 1
+modelos['house']['start'] = len(vertices_list)
+print('Processando modelo house.obj')
 for face in modelo['faces']:
     for vertice_id in face[0]:
         vertices_list.append(modelo['vertices'][vertice_id-1])
     for texture_id in face[1]:
         textures_coord_list.append(modelo['texture'][texture_id-1])
-modelos['casa']['size'] = len(vertices_list) - modelos['casa']['start']
-modelos['casa']['texture_id'] = texture_count
-load_texture_from_file(modelos['casa']['texture_id'], 'models/house/house2.png')
+modelos['house']['size'] = len(vertices_list) - modelos['house']['start']
+modelos['house']['texture_id'] = texture_count
+load_texture_from_file(modelos['house']['texture_id'], 'models/house/house2.png')
 texture_count += 1
 
-# Carrega a pessoa
+# Carrega a person
 modelo = load_model_from_file('models/person/denis_30k.obj')
 modelos['person'] = {}
 modelos['person']['n_texturas'] = 1
@@ -217,6 +216,21 @@ for face in modelo['faces']:
 modelos['person']['size'] = len(vertices_list) - modelos['person']['start']
 modelos['person']['texture_id'] = texture_count
 load_texture_from_file(modelos['person']['texture_id'], 'models/person/denis.jpg')
+texture_count += 1
+
+modelo = load_model_from_file('models/uganda/Knuckles.obj')
+modelos['uganda_knuckles'] = {}
+modelos['uganda_knuckles']['n_texturas'] = 1
+modelos['uganda_knuckles']['start'] = len(vertices_list)
+print('Processando modelo uganda_knuckles.obj')
+for face in modelo['faces']:
+    for vertice_id in face[0]:
+        vertices_list.append(modelo['vertices'][vertice_id-1])
+    for texture_id in face[1]:
+        textures_coord_list.append(modelo['texture'][texture_id-1])
+modelos['uganda_knuckles']['size'] = len(vertices_list) - modelos['uganda_knuckles']['start']
+modelos['uganda_knuckles']['texture_id'] = texture_count
+load_texture_from_file(modelos['uganda_knuckles']['texture_id'], 'models/uganda/Knuckles_Texture.png')
 texture_count += 1
 
 print(modelos)
@@ -251,7 +265,7 @@ glVertexAttribPointer(loc_texture_coord, 2, GL_FLOAT, False, stride, offset)
 #}}}
 #{{{ INPUT EVENTS
 
-cameraPos   = glm.vec3(0.0,  0.0,  1.0);
+cameraPos   = glm.vec3(0.0,  50.0,  0.0);
 cameraFront = glm.vec3(0.0,  0.0, -1.0);
 cameraUp    = glm.vec3(0.0,  1.0,  0.0);
 
@@ -259,7 +273,7 @@ wireframe = False
 
 def key_event(window,key,scancode,action,mods):
     global cameraPos, cameraFront, cameraUp
-    global wireframe, scale, cameraSpeed
+    global wireframe, scale, cameraSpeed, sensitivity
 
     # quit simulation
     if (key == glfw.KEY_Q or key == glfw.KEY_ESCAPE) and action == glfw.PRESS:
@@ -285,17 +299,27 @@ def key_event(window,key,scancode,action,mods):
         wireframe = not wireframe
 
     if key == glfw.KEY_O and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['pessoa'] += 0.01
+        scale['person'] += 0.01
     if key == glfw.KEY_L and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['pessoa'] -= 0.01
+        scale['person'] -= 0.01
     if key == glfw.KEY_I and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['casa'] += 0.1
+        scale['house'] += 0.1
     if key == glfw.KEY_K and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['casa'] -= 0.1
+        scale['house'] -= 0.1
     if key == glfw.KEY_U and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['terreno'] += 2
+        scale['terrain'] += 2
     if key == glfw.KEY_J and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['terreno'] -= 2
+        scale['terrain'] -= 2
+    if key == 61 and mods == 0 and (action == glfw.PRESS or action == glfw.REPEAT):
+        cameraSpeed += 0.01
+    if key == 45 and mods == 0 and (action == glfw.PRESS or action == glfw.REPEAT):
+        cameraSpeed -= 0.01
+    if key == 61 and mods == 1 and (action == glfw.PRESS or action == glfw.REPEAT):
+        sensitivity += 0.01
+    if key == 45 and mods == 1 and (action == glfw.PRESS or action == glfw.REPEAT):
+        sensitivity -= 0.01
+    print(cameraSpeed)
+    print(sensitivity)
 
 firstMouse = True
 yaw = -90.0
@@ -317,7 +341,6 @@ def mouse_event(window, xpos, ypos):
     lastX = xpos
     lastY = ypos
 
-    sensitivity = 0.15
     xoffset *= sensitivity
     yoffset *= sensitivity
 
@@ -341,32 +364,32 @@ glfw.set_input_mode(window, glfw.CURSOR, glfw.CURSOR_DISABLED)
 #}}}
 #{{{ DRAW FUNCTIONS
 
-def desenha_terreno(scale):
+def draw_terrain(scale):
     angle = 0.0;
     r_x = 0.0; r_y = 0.0; r_z = 1.0;
-    t_x = 0.0; t_y = -1.01; t_z = 0.0;
+    t_x = 0.0; t_y = 0.0; t_z = 0.0;
     s_x = s_y = s_z = scale
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
-    glBindTexture(GL_TEXTURE_2D, modelos['terreno']['texture_id'])
-    glDrawArrays(GL_TRIANGLES, modelos['terreno']['start'], modelos['terreno']['size'])
+    glBindTexture(GL_TEXTURE_2D, modelos['terrain']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['terrain']['start'], modelos['terrain']['size'])
 
-def desenha_casa(scale):
+def draw_house(scale):
     angle = 0.0
     r_x = 0.0; r_y = 0.0; r_z = 1.0
-    t_x = 0.0; t_y = -1.01; t_z = -20.0
+    t_x = 0.0; t_y = -1.0; t_z = -20.0
     s_x = s_y = s_z = scale;
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
-    glBindTexture(GL_TEXTURE_2D, modelos['casa']['texture_id'])
-    glDrawArrays(GL_TRIANGLES, modelos['casa']['start'], modelos['casa']['size'])
+    glBindTexture(GL_TEXTURE_2D, modelos['house']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['house']['start'], modelos['house']['size'])
 
-def desenha_pessoa(scale):
+def draw_person(scale):
     angle = 0.0;
     r_x = 0.0; r_y = 0.0; r_z = 1.0
-    t_x = 0.0; t_y = -1.01; t_z = -20.0
+    t_x = -150.0; t_y = 20.0; t_z = -15.0
     s_x = s_y = s_z = scale
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
@@ -374,17 +397,16 @@ def desenha_pessoa(scale):
     glBindTexture(GL_TEXTURE_2D, modelos['person']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['person']['start'], modelos['person']['size'])
 
-def desenha_palmeira(scale):
+def draw_uganda_knuckles(scale):
     angle = 0.0;
-    r_x = 0.0; r_y = 0.0; r_z = 1.0;
-    t_x = 0.0; t_y = -1.01; t_z = -20.0;
+    r_x = 0.0; r_y = 0.0; r_z = 1.0
+    t_x = 0.0; t_y = 50.0; t_z = 0.0
     s_x = s_y = s_z = scale
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
-    glBindTexture(GL_TEXTURE_2D, modelos['palm']['texture_id'])
-    glDrawArrays(GL_TRIANGLES, modelos['palm']['start'], modelos['palm']['size'])
-
+    glBindTexture(GL_TEXTURE_2D, modelos['uganda_knuckles']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['uganda_knuckles']['start'], modelos['uganda_knuckles']['size'])
 
 #}}}
 #{{{ MODEL VIEW PROJECTION
@@ -424,9 +446,10 @@ while not glfw.window_should_close(window):
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE if wireframe else GL_FILL)
 
-    desenha_terreno(scale['terreno'])
-    desenha_casa(scale['casa'])
-    desenha_pessoa(scale['pessoa'])
+    draw_terrain(scale['terrain'])
+    draw_house(scale['house'])
+    draw_person(scale['person'])
+    draw_uganda_knuckles(10)
 
     mat_view = view()
     loc_view = glGetUniformLocation(program, "view")
