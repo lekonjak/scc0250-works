@@ -151,7 +151,7 @@ scale['terrain'] = 1024
 scale['house'] = 32
 scale['person'] = 0.65
 
-cameraSpeed = 2
+cameraSpeed = 5
 sensitivity = 0.15
 
 #}}}
@@ -183,7 +183,7 @@ for face in modelo['faces']:
         textures_coord_list.append(modelo['texture'][texture_id-1])
 modelos['terrain']['size'] = len(vertices_list) - modelos['terrain']['start']
 modelos['terrain']['texture_id'] = texture_count
-load_texture_from_file(modelos['terrain']['texture_id'], 'models/terrain/chess.jpg')
+load_texture_from_file(modelos['terrain']['texture_id'], 'models/terrain/grass.jpg')
 texture_count += 1
 
 # Carrega a house
@@ -199,11 +199,11 @@ for face in modelo['faces']:
         textures_coord_list.append(modelo['texture'][texture_id-1])
 modelos['house']['size'] = len(vertices_list) - modelos['house']['start']
 modelos['house']['texture_id'] = texture_count
-load_texture_from_file(modelos['house']['texture_id'], 'models/cottage/Cottage_Clean/Cottage_Clean_Base_Color.png')
+load_texture_from_file(modelos['house']['texture_id'], 'models/cottage/Cottage_Clean_Base_Color.png')
 texture_count += 1
 
 # Carrega a person
-modelo = load_model_from_file('models/person/denis_30k.obj')
+modelo = load_model_from_file('models/person/denis.obj')
 modelos['person'] = {}
 modelos['person']['n_texturas'] = 1
 modelos['person']['start'] = len(vertices_list)
@@ -233,7 +233,7 @@ modelos['uganda_knuckles']['texture_id'] = texture_count
 load_texture_from_file(modelos['uganda_knuckles']['texture_id'], 'models/uganda/Knuckles_Texture.png')
 texture_count += 1
 
-modelo = load_model_from_file('models/onepiece/uploads_files_979927_Buggy_01.obj')
+modelo = load_model_from_file('models/statue2/untitled.obj')
 modelos['buggy'] = {}
 modelos['buggy']['n_texturas'] = 1
 modelos['buggy']['start'] = len(vertices_list)
@@ -245,7 +245,7 @@ for face in modelo['faces']:
         textures_coord_list.append(modelo['texture'][texture_id-1])
 modelos['buggy']['size'] = len(vertices_list) - modelos['buggy']['start']
 modelos['buggy']['texture_id'] = texture_count
-load_texture_from_file(modelos['buggy']['texture_id'], 'models/onepiece/Buggy_01.jpg')
+load_texture_from_file(modelos['buggy']['texture_id'], 'models/statue2/DavidFixedDiff.jpg')
 texture_count += 1
 
 print(modelos)
@@ -290,29 +290,19 @@ def key_event(window,key,scancode,action,mods):
     global cameraPos, cameraFront, cameraUp
     global wireframe, scale, cameraSpeed, sensitivity
 
-    # quit simulation
+    # quit simulation with <ESC> or Q
     if (key == glfw.KEY_Q or key == glfw.KEY_ESCAPE) and action == glfw.PRESS:
         glfw.set_window_should_close(window, True)
-
-    if key == glfw.KEY_W and (action == glfw.PRESS or
-                              action == glfw.REPEAT):
+    if key == glfw.KEY_W and (action == glfw.PRESS or action == glfw.REPEAT):
         cameraPos += cameraSpeed * cameraFront
-
-    if key == glfw.KEY_S and (action == glfw.PRESS or
-                              action == glfw.REPEAT):
+    if key == glfw.KEY_S and (action == glfw.PRESS or action == glfw.REPEAT):
         cameraPos -= cameraSpeed * cameraFront
-
-    if key == glfw.KEY_A and (action == glfw.PRESS or
-                              action == glfw.REPEAT):
+    if key == glfw.KEY_A and (action == glfw.PRESS or action == glfw.REPEAT):
         cameraPos -= glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
-
-    if key == glfw.KEY_D and (action == glfw.PRESS or
-                              action == glfw.REPEAT):
+    if key == glfw.KEY_D and (action == glfw.PRESS or action == glfw.REPEAT):
         cameraPos += glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
-
     if key == glfw.KEY_P and action == glfw.PRESS:
         wireframe = not wireframe
-
     if key == glfw.KEY_O and (action == glfw.PRESS or action == glfw.REPEAT):
         scale['person'] += 0.01
     if key == glfw.KEY_L and (action == glfw.PRESS or action == glfw.REPEAT):
@@ -333,23 +323,14 @@ def key_event(window,key,scancode,action,mods):
         sensitivity += 0.01
     if key == 45 and mods == 1 and (action == glfw.PRESS or action == glfw.REPEAT):
         sensitivity -= 0.01
-    print(cameraSpeed)
-    print(sensitivity)
 
-firstMouse = True
 yaw = -90.0
 pitch = 0.0
-lastX =  largura/2
-lastY =  altura/2
+lastX = largura/2
+lastY = altura/2
 
 def mouse_event(window, xpos, ypos):
-    global firstMouse, cameraFront, yaw, pitch, lastX, lastY
-    global sensitivity
-
-    if firstMouse:
-        lastX = xpos
-        lastY = ypos
-        firstMouse = False
+    global cameraFront, yaw, pitch, lastX, lastY, sensitivity
 
     xoffset = xpos - lastX
     yoffset = lastY - ypos
@@ -379,7 +360,7 @@ glfw.set_input_mode(window, glfw.CURSOR, glfw.CURSOR_DISABLED)
 #}}}
 #{{{ DRAW FUNCTIONS
 
-def draw_terrain(scale):
+def draw_terrain():
     angle = 0.0;
     r_x = 0.0; r_y = 0.0; r_z = 1.0;
     t_x = 0.0; t_y = 0.0; t_z = 0.0;
@@ -454,9 +435,11 @@ def view():
 
 def projection():
     global altura, largura
-    mat_projection = glm.perspective(glm.radians(90.0), largura/altura, 0.1, 1000.0)
+    #                                fov                aspect          near  far
+    mat_projection = glm.perspective(glm.radians(90.0), largura/altura, 0.01, 5000.0)
     mat_projection = np.array(mat_projection)
     return mat_projection
+
 #}}}
 #{{{ LOOP
 
@@ -464,6 +447,8 @@ glfw.show_window(window)
 glfw.set_cursor_pos(window, largura/2, altura/2)
 
 glEnable(GL_DEPTH_TEST)
+
+last_time = glfw.get_time()
 
 while not glfw.window_should_close(window):
     glfw.poll_events()
@@ -476,7 +461,7 @@ while not glfw.window_should_close(window):
     draw_house(scale['house'])
     draw_person(scale['person'])
     draw_uganda_knuckles(10)
-    draw_buggy(10)
+    draw_buggy(0.5)
 
     mat_view = view()
     loc_view = glGetUniformLocation(program, "view")
@@ -487,6 +472,10 @@ while not glfw.window_should_close(window):
     glUniformMatrix4fv(loc_projection, 1, GL_FALSE, mat_projection)
 
     glfw.swap_buffers(window)
+
+    now = glfw.get_time()
+    print('{:3.4f} ms'.format(1000*(now - last_time)))
+    last_time = now
 
 print(scale)
 
