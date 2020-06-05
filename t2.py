@@ -199,7 +199,7 @@ for face in modelo['faces']:
         textures_coord_list.append(modelo['texture'][texture_id-1])
 modelos['house']['size'] = len(vertices_list) - modelos['house']['start']
 modelos['house']['texture_id'] = texture_count
-load_texture_from_file(modelos['house']['texture_id'], 'models/cottage/Cottage_Clean/Cottage_Clean_Base_Color.png')
+load_texture_from_file(modelos['house']['texture_id'], 'models/cottage/Cottage_Clean_Base_Color.png')
 texture_count += 1
 
 # Carrega a person
