@@ -170,6 +170,22 @@ textures = glGenTextures(qtd_texturas)
 vertices_list = []
 textures_coord_list = []
 
+# Skybox?
+modelo = load_model_from_file('models/skybox/untitled.obj')
+modelos['skybox'] = {}
+modelos['skybox']['n_texturas'] = 1
+modelos['skybox']['start'] = len(vertices_list)
+for face in modelo['faces']:
+    for vertice_id in face[0]:
+        vertices_list.append(modelo['vertices'][vertice_id-1])
+    for texture_id in face[1]:
+        textures_coord_list.append(modelo['texture'][texture_id-1])
+modelos['skybox']['size'] = len(vertices_list) - modelos['skybox']['start']
+modelos['skybox']['texture_id'] = texture_count
+load_texture_from_file(modelos['skybox']['texture_id'], 'models/skybox/blue.png')
+texture_count += 1
+
+
 # Gramado
 modelo = load_model_from_file('models/terrain/terreno.obj')
 modelos['terrain'] = {}
@@ -333,7 +349,7 @@ cameraFront = glm.vec3(0.0,  0.0, -1.0);
 cameraUp    = glm.vec3(0.0,  1.0,  0.0);
 
 def skybox(pos):
-    if -1024 < pos[0] < 1024 and 10 < pos[1] < 256 and -1024 < pos[2] < 1024:
+    if -1024 < pos[0] < 1024 and 10 < pos[1] < 1024 and -1024 < pos[2] < 1024:
         return True
     return False
 
@@ -357,14 +373,12 @@ def key_event(window,key,scancode,action,mods):
         else:
             cameraPos += cameraSpeed * cameraFront
     if key == glfw.KEY_A and (action == glfw.PRESS or action == glfw.REPEAT):
-        if skybox(cameraPos - glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
-):
+        if skybox(cameraPos - glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed):
             cameraPos -= glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
         else:
             cameraPos += glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
     if key == glfw.KEY_D and (action == glfw.PRESS or action == glfw.REPEAT):
-        if skybox(cameraPos + glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
-):
+        if skybox(cameraPos + glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed):
             cameraPos += glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
         else:
             cameraPos -= glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
@@ -415,6 +429,17 @@ glfw.set_input_mode(window, glfw.CURSOR, glfw.CURSOR_DISABLED)
 
 #}}}
 #{{{ DRAW FUNCTIONS
+
+def draw_skybox():
+    angle = 0.0;
+    r_x = 0.0; r_y = 1.0; r_z = 0.0;
+    t_x = 0.0; t_y = 1000.0; t_z = 0.0;
+    s_x = 1024; s_z = 1024; s_y = 1024;
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    glBindTexture(GL_TEXTURE_2D, modelos['skybox']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['skybox']['start'], modelos['skybox']['size'])
 
 def draw_terrain():
     angle = 0.0;
@@ -545,7 +570,7 @@ def view():
 
 def projection():
     global altura, largura
-    #                                fov                aspect          near  far
+    #                                fov                aspect ratio    near  far
     mat_projection = glm.perspective(glm.radians(90.0), largura/altura, 0.01, 5000.0)
     mat_projection = np.array(mat_projection)
     return mat_projection
@@ -563,10 +588,11 @@ last_time = glfw.get_time()
 while not glfw.window_should_close(window):
     glfw.poll_events()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glClearColor(0.68, 0.85, 0.9, 1.0)
+    glClearColor(0.0, 0.0, 0.0, 1.0)
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE if wireframe else GL_FILL)
 
+    draw_skybox()
     draw_terrain()
     draw_road()
     draw_house()
@@ -577,7 +603,7 @@ while not glfw.window_should_close(window):
     draw_tree_2()
     draw_tree_3()
     draw_deer(deer_angle)
-    deer_angle += 0.2
+    deer_angle += 0.5
 
     mat_view = view()
     loc_view = glGetUniformLocation(program, "view")
