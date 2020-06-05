@@ -146,13 +146,7 @@ def load_texture_from_file(texture_id, img_textura):
 texture_count = 0
 modelos = {}
 
-scale = {}
-scale['interior'] = {}
-scale['interior']['s_x'] = 13.86
-scale['interior']['s_z'] = 18.62;
-scale['interior']['t_x'] = -110.49;
-scale['interior']['t_z'] = 100.30;
-
+deer_angle = 0
 cameraSpeed = 5
 sensitivity = 0.15
 
@@ -266,6 +260,38 @@ modelos['statue']['texture_id'] = texture_count
 load_texture_from_file(modelos['statue']['texture_id'], 'models/statue2/DavidFixedDiff.jpg')
 texture_count += 1
 
+# Tree
+modelo = load_model_from_file('models/tree/tree_X12_+X1_Rock_Pack.obj')
+modelos['tree'] = {}
+modelos['tree']['n_texturas'] = 1
+modelos['tree']['start'] = len(vertices_list)
+print('Processando modelo tree.obj')
+for face in modelo['faces']:
+    for vertice_id in face[0]:
+        vertices_list.append(modelo['vertices'][vertice_id-1])
+    for texture_id in face[1]:
+        textures_coord_list.append(modelo['texture'][texture_id-1])
+modelos['tree']['size'] = len(vertices_list) - modelos['tree']['start']
+modelos['tree']['texture_id'] = texture_count
+load_texture_from_file(modelos['tree']['texture_id'], 'models/tree/_6_tree.png')
+texture_count += 1
+
+# Deer
+modelo = load_model_from_file('models/deer/untitled.obj')
+modelos['deer'] = {}
+modelos['deer']['n_texturas'] = 1
+modelos['deer']['start'] = len(vertices_list)
+print('Processando modelo deer.obj')
+for face in modelo['faces']:
+    for vertice_id in face[0]:
+        vertices_list.append(modelo['vertices'][vertice_id-1])
+    for texture_id in face[1]:
+        textures_coord_list.append(modelo['texture'][texture_id-1])
+modelos['deer']['size'] = len(vertices_list) - modelos['tree']['start']
+modelos['deer']['texture_id'] = texture_count
+load_texture_from_file(modelos['deer']['texture_id'], 'models/deer/Diffuse.jpg')
+texture_count += 1
+
 print(modelos)
 
 # Request a buffer slot from GPU
@@ -298,7 +324,7 @@ glVertexAttribPointer(loc_texture_coord, 2, GL_FLOAT, False, stride, offset)
 #}}}
 #{{{ INPUT EVENTS
 
-cameraPos   = glm.vec3(0.0,  50.0,  0.0);
+cameraPos   = glm.vec3(100.0,  100.0,  100.0);
 cameraFront = glm.vec3(0.0,  0.0, -1.0);
 cameraUp    = glm.vec3(0.0,  1.0,  0.0);
 
@@ -411,7 +437,7 @@ def draw_road():
 def draw_house():
     angle = 0.0
     r_x = 0.0; r_y = 1.0; r_z = 0.0
-    t_x = 0.0; t_y = 0.0; t_z = 0.0
+    t_x = 0.0; t_y = 0.0; t_z = 600.0
     s_x = s_y = s_z = 4;
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
@@ -422,7 +448,7 @@ def draw_house():
 def draw_person():
     angle = 90.0;
     r_x = 0.0; r_y = 1.0; r_z = 0.0
-    t_x = -80.0; t_y = 2.0; t_z = 0.0
+    t_x = -680.0; t_y = 2.0; t_z = 000.0
     s_x = s_y = s_z = 0.65;
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
@@ -433,7 +459,7 @@ def draw_person():
 def draw_uganda_knuckles():
     angle = 0.0;
     r_x = 0.0; r_y = 0.0; r_z = 1.0
-    t_x = 90.0; t_y = 2.0; t_z = 0.0
+    t_x = 90.0; t_y = 2.0; t_z = 610.0
     s_x = s_y = s_z = 8
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
@@ -444,13 +470,56 @@ def draw_uganda_knuckles():
 def draw_statue():
     angle = 90.0;
     r_x = 0.0; r_y = 1.0; r_z = 0.0
-    t_x = 0.0; t_y = 2.0; t_z = -90.0
+    t_x = -610.0; t_y = 2.0; t_z = -90.0
     s_x = s_y = s_z = 0.35
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     glBindTexture(GL_TEXTURE_2D, modelos['statue']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['statue']['start'], modelos['statue']['size'])
+
+def draw_tree_1():
+    angle = 0.0;
+    r_x = 0.0; r_y = 1.0; r_z = 0.0
+    t_x = 50.0; t_y = 2.0; t_z = 20.0
+    s_x = s_y = s_z = 100
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['tree']['start'], modelos['tree']['size'])
+
+def draw_tree_2():
+    angle = 0.0;
+    r_x = 0.0; r_y = 1.0; r_z = 0.0
+    t_x = -20.0; t_y = 2.0; t_z = -850.0
+    s_x = s_y = s_z = 85
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['tree']['start'], modelos['tree']['size'])
+
+def draw_tree_3():
+    angle = 30.0;
+    r_x = 0.0; r_y = 1.0; r_z = 0.0
+    t_x = -600.0; t_y = 2.0; t_z = 0.0
+    s_x = s_y = s_z = 90
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['tree']['start'], modelos['tree']['size'])
+
+def draw_deer(angle):
+    r_x = 0.0; r_y = 1.0; r_z = 0.0
+    t_x = 0.0; t_y = 2.0; t_z = 0.0
+    s_x = s_y = s_z = 90
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    glBindTexture(GL_TEXTURE_2D, modelos['deer']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['deer']['start'], modelos['deer']['size'])
 
 #}}}
 #{{{ MODEL VIEW PROJECTION
@@ -500,6 +569,11 @@ while not glfw.window_should_close(window):
     draw_person()
     draw_uganda_knuckles()
     draw_statue()
+    draw_tree_1()
+    draw_tree_2()
+    draw_tree_3()
+    draw_deer(deer_angle)
+    deer_angle += 0.2
 
     mat_view = view()
     loc_view = glGetUniformLocation(program, "view")
@@ -510,13 +584,6 @@ while not glfw.window_should_close(window):
     glUniformMatrix4fv(loc_projection, 1, GL_FALSE, mat_projection)
 
     glfw.swap_buffers(window)
-
-    now = glfw.get_time()
-    print('{:3.4f} ms'.format(1000*(now - last_time)))
-    print(cameraPos)
-    last_time = now
-
-print(scale)
 
 glfw.terminate()
 #}}}

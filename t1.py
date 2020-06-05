@@ -15,7 +15,7 @@ import random
 
 glfw.init()
 glfw.window_hint(glfw.VISIBLE, glfw.FALSE);
-window = glfw.create_window(800, 800, "T1", None, None)
+window = glfw.create_window(600, 600, "T1", None, None)
 glfw.make_context_current(window)
 
 # GLSL (OpenGL Shading Language)
