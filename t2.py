@@ -202,38 +202,8 @@ modelos['road']['texture_id'] = texture_count
 load_texture_from_file(modelos['road']['texture_id'], 'models/terrain/road2.jpg')
 texture_count += 1
 
-# Interior_large da casa
-modelo = load_model_from_file('models/terrain/terreno.obj')
-modelos['interior_large'] = {}
-modelos['interior_large']['n_texturas'] = 1
-modelos['interior_large']['start'] = len(vertices_list)
-for face in modelo['faces']:
-    for vertice_id in face[0]:
-        vertices_list.append(modelo['vertices'][vertice_id-1])
-    for texture_id in face[1]:
-        textures_coord_list.append(modelo['texture'][texture_id-1])
-modelos['interior_large']['size'] = len(vertices_list) - modelos['interior_large']['start']
-modelos['interior_large']['texture_id'] = texture_count
-load_texture_from_file(modelos['interior_large']['texture_id'], 'models/terrain/chess.jpg')
-texture_count += 1
-
-# Interior da casa
-modelo = load_model_from_file('models/terrain/terreno.obj')
-modelos['interior'] = {}
-modelos['interior']['n_texturas'] = 1
-modelos['interior']['start'] = len(vertices_list)
-for face in modelo['faces']:
-    for vertice_id in face[0]:
-        vertices_list.append(modelo['vertices'][vertice_id-1])
-    for texture_id in face[1]:
-        textures_coord_list.append(modelo['texture'][texture_id-1])
-modelos['interior']['size'] = len(vertices_list) - modelos['interior']['start']
-modelos['interior']['texture_id'] = texture_count
-load_texture_from_file(modelos['interior']['texture_id'], 'models/terrain/chess.jpg')
-texture_count += 1
-
 # Casa
-modelo = load_model_from_file('models/cottage/uploads_files_2168072_Cottage_FREE.obj')
+modelo = load_model_from_file('models/house/untitled.obj')
 modelos['house'] = {}
 modelos['house']['n_texturas'] = 1
 modelos['house']['start'] = len(vertices_list)
@@ -245,10 +215,10 @@ for face in modelo['faces']:
         textures_coord_list.append(modelo['texture'][texture_id-1])
 modelos['house']['size'] = len(vertices_list) - modelos['house']['start']
 modelos['house']['texture_id'] = texture_count
-load_texture_from_file(modelos['house']['texture_id'], 'models/cottage/Cottage_Clean_Base_Color.png')
+load_texture_from_file(modelos['house']['texture_id'], 'models/house/Hut_Low_lambert1_AlbedoTransparency.png')
 texture_count += 1
 
-# Carrega a person
+# Denis
 modelo = load_model_from_file('models/person/denis.obj')
 modelos['person'] = {}
 modelos['person']['n_texturas'] = 1
@@ -264,6 +234,7 @@ modelos['person']['texture_id'] = texture_count
 load_texture_from_file(modelos['person']['texture_id'], 'models/person/denis.jpg')
 texture_count += 1
 
+# Knuckles
 modelo = load_model_from_file('models/uganda/Knuckles.obj')
 modelos['uganda_knuckles'] = {}
 modelos['uganda_knuckles']['n_texturas'] = 1
@@ -279,19 +250,20 @@ modelos['uganda_knuckles']['texture_id'] = texture_count
 load_texture_from_file(modelos['uganda_knuckles']['texture_id'], 'models/uganda/Knuckles_Texture.png')
 texture_count += 1
 
+# Statue
 modelo = load_model_from_file('models/statue2/untitled.obj')
-modelos['buggy'] = {}
-modelos['buggy']['n_texturas'] = 1
-modelos['buggy']['start'] = len(vertices_list)
-print('Processando modelo buggy.obj')
+modelos['statue'] = {}
+modelos['statue']['n_texturas'] = 1
+modelos['statue']['start'] = len(vertices_list)
+print('Processando modelo statue.obj')
 for face in modelo['faces']:
     for vertice_id in face[0]:
         vertices_list.append(modelo['vertices'][vertice_id-1])
     for texture_id in face[1]:
         textures_coord_list.append(modelo['texture'][texture_id-1])
-modelos['buggy']['size'] = len(vertices_list) - modelos['buggy']['start']
-modelos['buggy']['texture_id'] = texture_count
-load_texture_from_file(modelos['buggy']['texture_id'], 'models/statue2/DavidFixedDiff.jpg')
+modelos['statue']['size'] = len(vertices_list) - modelos['statue']['start']
+modelos['statue']['texture_id'] = texture_count
+load_texture_from_file(modelos['statue']['texture_id'], 'models/statue2/DavidFixedDiff.jpg')
 texture_count += 1
 
 print(modelos)
@@ -369,24 +341,6 @@ def key_event(window,key,scancode,action,mods):
     if key == glfw.KEY_P and action == glfw.PRESS:
         wireframe = not wireframe
 
-    if key == glfw.KEY_I and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['interior']['s_x'] += 0.03
-    if key == glfw.KEY_K and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['interior']['s_x'] -= 0.03
-    if key == glfw.KEY_J and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['interior']['t_x'] += 0.03
-    if key == glfw.KEY_L and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['interior']['t_x'] -= 0.03
-    if mods == 1 and key == glfw.KEY_I and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['interior']['s_z'] += 0.3
-    if mods == 1 and key == glfw.KEY_K and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['interior']['s_z'] -= 0.03
-    if mods == 1 and key == glfw.KEY_J and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['interior']['t_z'] += 0.03
-    if mods == 1 and key == glfw.KEY_L and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['interior']['t_z'] -= 0.03
-
-
     if key == 61 and mods == 0 and (action == glfw.PRESS or action == glfw.REPEAT):
         cameraSpeed += 0.01
     if key == 45 and mods == 0 and (action == glfw.PRESS or action == glfw.REPEAT):
@@ -454,34 +408,21 @@ def draw_road():
     glBindTexture(GL_TEXTURE_2D, modelos['road']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['road']['start'], modelos['road']['size'])
 
-def draw_interior_large():
-    global scale
-    angle = 0.0;
-    r_x = 0.0; r_y = 1.0; r_z = 0.0;
-    t_x = -10.86; t_y = 12.0; t_z = 1.09;
-    s_x = 130.62; s_y = 1; s_z = 170;
-
-    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
-    loc_model = glGetUniformLocation(program, "model")
-    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
-    glBindTexture(GL_TEXTURE_2D, modelos['interior_large']['texture_id'])
-    glDrawArrays(GL_TRIANGLES, modelos['interior_large']['start'], modelos['interior_large']['size'])
-
 def draw_house():
     angle = 0.0
     r_x = 0.0; r_y = 1.0; r_z = 0.0
-    t_x = 0.0; t_y = -3.0; t_z = 0.0
-    s_x = s_y = s_z = 32;
+    t_x = 0.0; t_y = 0.0; t_z = 0.0
+    s_x = s_y = s_z = 4;
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     glBindTexture(GL_TEXTURE_2D, modelos['house']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['house']['start'], modelos['house']['size'])
 
-def draw_person(scale):
-    angle = 0.0;
-    r_x = 0.0; r_y = 0.0; r_z = 1.0
-    t_x = -150.0; t_y = 20.0; t_z = -15.0
+def draw_person():
+    angle = 90.0;
+    r_x = 0.0; r_y = 1.0; r_z = 0.0
+    t_x = -80.0; t_y = 2.0; t_z = 0.0
     s_x = s_y = s_z = 0.65;
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
@@ -489,27 +430,27 @@ def draw_person(scale):
     glBindTexture(GL_TEXTURE_2D, modelos['person']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['person']['start'], modelos['person']['size'])
 
-def draw_uganda_knuckles(scale):
+def draw_uganda_knuckles():
     angle = 0.0;
     r_x = 0.0; r_y = 0.0; r_z = 1.0
-    t_x = 0.0; t_y = 50.0; t_z = 0.0
-    s_x = s_y = s_z = scale
+    t_x = 90.0; t_y = 2.0; t_z = 0.0
+    s_x = s_y = s_z = 8
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     glBindTexture(GL_TEXTURE_2D, modelos['uganda_knuckles']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['uganda_knuckles']['start'], modelos['uganda_knuckles']['size'])
 
-def draw_buggy(scale):
-    angle = 0.0;
-    r_x = 0.0; r_y = 0.0; r_z = 1.0
-    t_x = 0.0; t_y = 50.0; t_z = 0.0
-    s_x = s_y = s_z = scale
+def draw_statue():
+    angle = 90.0;
+    r_x = 0.0; r_y = 1.0; r_z = 0.0
+    t_x = 0.0; t_y = 2.0; t_z = -90.0
+    s_x = s_y = s_z = 0.35
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
-    glBindTexture(GL_TEXTURE_2D, modelos['buggy']['texture_id'])
-    glDrawArrays(GL_TRIANGLES, modelos['buggy']['start'], modelos['buggy']['size'])
+    glBindTexture(GL_TEXTURE_2D, modelos['statue']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['statue']['start'], modelos['statue']['size'])
 
 #}}}
 #{{{ MODEL VIEW PROJECTION
@@ -556,10 +497,9 @@ while not glfw.window_should_close(window):
     draw_terrain()
     draw_road()
     draw_house()
-    draw_interior_large()
-    #draw_person(scale['person'])
-    #draw_uganda_knuckles(10)
-    #draw_buggy(0.5)
+    draw_person()
+    draw_uganda_knuckles()
+    draw_statue()
 
     mat_view = view()
     loc_view = glGetUniformLocation(program, "view")
