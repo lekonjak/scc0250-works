@@ -147,9 +147,11 @@ texture_count = 0
 modelos = {}
 
 scale = {}
-scale['terrain'] = 1024
-scale['house'] = 32
-scale['person'] = 0.65
+scale['interior'] = {}
+scale['interior']['s_x'] = 13.86
+scale['interior']['s_z'] = 18.62;
+scale['interior']['t_x'] = -110.49;
+scale['interior']['t_z'] = 100.30;
 
 cameraSpeed = 5
 sensitivity = 0.15
@@ -170,12 +172,11 @@ textures = glGenTextures(qtd_texturas)
 vertices_list = []
 textures_coord_list = []
 
-# Carrega o terrain
+# Gramado
 modelo = load_model_from_file('models/terrain/terreno.obj')
 modelos['terrain'] = {}
 modelos['terrain']['n_texturas'] = 1
 modelos['terrain']['start'] = len(vertices_list)
-print('Processando modelo terreno.obj')
 for face in modelo['faces']:
     for vertice_id in face[0]:
         vertices_list.append(modelo['vertices'][vertice_id-1])
@@ -186,7 +187,52 @@ modelos['terrain']['texture_id'] = texture_count
 load_texture_from_file(modelos['terrain']['texture_id'], 'models/terrain/grass.jpg')
 texture_count += 1
 
-# Carrega a house
+# Rua
+modelo = load_model_from_file('models/terrain/terreno.obj')
+modelos['road'] = {}
+modelos['road']['n_texturas'] = 1
+modelos['road']['start'] = len(vertices_list)
+for face in modelo['faces']:
+    for vertice_id in face[0]:
+        vertices_list.append(modelo['vertices'][vertice_id-1])
+    for texture_id in face[1]:
+        textures_coord_list.append(modelo['texture'][texture_id-1])
+modelos['road']['size'] = len(vertices_list) - modelos['road']['start']
+modelos['road']['texture_id'] = texture_count
+load_texture_from_file(modelos['road']['texture_id'], 'models/terrain/road2.jpg')
+texture_count += 1
+
+# Interior_large da casa
+modelo = load_model_from_file('models/terrain/terreno.obj')
+modelos['interior_large'] = {}
+modelos['interior_large']['n_texturas'] = 1
+modelos['interior_large']['start'] = len(vertices_list)
+for face in modelo['faces']:
+    for vertice_id in face[0]:
+        vertices_list.append(modelo['vertices'][vertice_id-1])
+    for texture_id in face[1]:
+        textures_coord_list.append(modelo['texture'][texture_id-1])
+modelos['interior_large']['size'] = len(vertices_list) - modelos['interior_large']['start']
+modelos['interior_large']['texture_id'] = texture_count
+load_texture_from_file(modelos['interior_large']['texture_id'], 'models/terrain/chess.jpg')
+texture_count += 1
+
+# Interior da casa
+modelo = load_model_from_file('models/terrain/terreno.obj')
+modelos['interior'] = {}
+modelos['interior']['n_texturas'] = 1
+modelos['interior']['start'] = len(vertices_list)
+for face in modelo['faces']:
+    for vertice_id in face[0]:
+        vertices_list.append(modelo['vertices'][vertice_id-1])
+    for texture_id in face[1]:
+        textures_coord_list.append(modelo['texture'][texture_id-1])
+modelos['interior']['size'] = len(vertices_list) - modelos['interior']['start']
+modelos['interior']['texture_id'] = texture_count
+load_texture_from_file(modelos['interior']['texture_id'], 'models/terrain/chess.jpg')
+texture_count += 1
+
+# Casa
 modelo = load_model_from_file('models/cottage/uploads_files_2168072_Cottage_FREE.obj')
 modelos['house'] = {}
 modelos['house']['n_texturas'] = 1
@@ -303,18 +349,25 @@ def key_event(window,key,scancode,action,mods):
         cameraPos += glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
     if key == glfw.KEY_P and action == glfw.PRESS:
         wireframe = not wireframe
-    if key == glfw.KEY_O and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['person'] += 0.01
-    if key == glfw.KEY_L and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['person'] -= 0.01
+
     if key == glfw.KEY_I and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['house'] += 0.1
+        scale['interior']['s_x'] += 0.03
     if key == glfw.KEY_K and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['house'] -= 0.1
-    if key == glfw.KEY_U and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['terrain'] += 2
+        scale['interior']['s_x'] -= 0.03
     if key == glfw.KEY_J and (action == glfw.PRESS or action == glfw.REPEAT):
-        scale['terrain'] -= 2
+        scale['interior']['t_x'] += 0.03
+    if key == glfw.KEY_L and (action == glfw.PRESS or action == glfw.REPEAT):
+        scale['interior']['t_x'] -= 0.03
+    if mods == 1 and key == glfw.KEY_I and (action == glfw.PRESS or action == glfw.REPEAT):
+        scale['interior']['s_z'] += 0.3
+    if mods == 1 and key == glfw.KEY_K and (action == glfw.PRESS or action == glfw.REPEAT):
+        scale['interior']['s_z'] -= 0.03
+    if mods == 1 and key == glfw.KEY_J and (action == glfw.PRESS or action == glfw.REPEAT):
+        scale['interior']['t_z'] += 0.03
+    if mods == 1 and key == glfw.KEY_L and (action == glfw.PRESS or action == glfw.REPEAT):
+        scale['interior']['t_z'] -= 0.03
+
+
     if key == 61 and mods == 0 and (action == glfw.PRESS or action == glfw.REPEAT):
         cameraSpeed += 0.01
     if key == 45 and mods == 0 and (action == glfw.PRESS or action == glfw.REPEAT):
@@ -362,20 +415,44 @@ glfw.set_input_mode(window, glfw.CURSOR, glfw.CURSOR_DISABLED)
 
 def draw_terrain():
     angle = 0.0;
-    r_x = 0.0; r_y = 0.0; r_z = 1.0;
+    r_x = 0.0; r_y = 1.0; r_z = 0.0;
     t_x = 0.0; t_y = 0.0; t_z = 0.0;
-    s_x = s_y = s_z = scale
+    s_x = s_z = 1024; s_y = 1;
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     glBindTexture(GL_TEXTURE_2D, modelos['terrain']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['terrain']['start'], modelos['terrain']['size'])
 
-def draw_house(scale):
+def draw_road():
+    angle = 90.0;
+    r_x = 0.0; r_y = 1.0; r_z = 0.0;
+    t_x = 600.0; t_y = 1.0; t_z = 0.0;
+    s_x = 102.4; s_z = 1024; s_y = 1;
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    glBindTexture(GL_TEXTURE_2D, modelos['road']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['road']['start'], modelos['road']['size'])
+
+def draw_interior_large():
+    global scale
+    angle = 0.0;
+    r_x = 0.0; r_y = 1.0; r_z = 0.0;
+    t_x = -10.86; t_y = 12.0; t_z = 1.09;
+    s_x = 130.62; s_y = 1; s_z = 170;
+
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    glBindTexture(GL_TEXTURE_2D, modelos['interior_large']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['interior_large']['start'], modelos['interior_large']['size'])
+
+def draw_house():
     angle = 0.0
-    r_x = 0.0; r_y = 0.0; r_z = 1.0
-    t_x = 0.0; t_y = -1.0; t_z = -20.0
-    s_x = s_y = s_z = scale;
+    r_x = 0.0; r_y = 1.0; r_z = 0.0
+    t_x = 0.0; t_y = -3.0; t_z = 0.0
+    s_x = s_y = s_z = 32;
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
@@ -386,7 +463,7 @@ def draw_person(scale):
     angle = 0.0;
     r_x = 0.0; r_y = 0.0; r_z = 1.0
     t_x = -150.0; t_y = 20.0; t_z = -15.0
-    s_x = s_y = s_z = scale
+    s_x = s_y = s_z = 0.65;
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
@@ -457,11 +534,13 @@ while not glfw.window_should_close(window):
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE if wireframe else GL_FILL)
 
-    draw_terrain(scale['terrain'])
-    draw_house(scale['house'])
-    draw_person(scale['person'])
-    draw_uganda_knuckles(10)
-    draw_buggy(0.5)
+    draw_terrain()
+    draw_road()
+    draw_house()
+    draw_interior_large()
+    #draw_person(scale['person'])
+    #draw_uganda_knuckles(10)
+    #draw_buggy(0.5)
 
     mat_view = view()
     loc_view = glGetUniformLocation(program, "view")
