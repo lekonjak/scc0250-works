@@ -330,6 +330,11 @@ cameraPos   = glm.vec3(0.0,  50.0,  0.0);
 cameraFront = glm.vec3(0.0,  0.0, -1.0);
 cameraUp    = glm.vec3(0.0,  1.0,  0.0);
 
+def skybox(pos):
+    if -1024 < pos[0] < 1024 and 10 < pos[1] < 256 and -1024 < pos[2] < 1024:
+        return True
+    return False
+
 wireframe = False
 
 def key_event(window,key,scancode,action,mods):
@@ -340,13 +345,27 @@ def key_event(window,key,scancode,action,mods):
     if (key == glfw.KEY_Q or key == glfw.KEY_ESCAPE) and action == glfw.PRESS:
         glfw.set_window_should_close(window, True)
     if key == glfw.KEY_W and (action == glfw.PRESS or action == glfw.REPEAT):
-        cameraPos += cameraSpeed * cameraFront
+        if skybox(cameraPos + cameraSpeed * cameraFront):
+            cameraPos += cameraSpeed * cameraFront
+        else:
+            cameraPos -= cameraSpeed * cameraFront
     if key == glfw.KEY_S and (action == glfw.PRESS or action == glfw.REPEAT):
-        cameraPos -= cameraSpeed * cameraFront
+        if skybox(cameraPos - cameraSpeed * cameraFront):
+            cameraPos -= cameraSpeed * cameraFront
+        else:
+            cameraPos += cameraSpeed * cameraFront
     if key == glfw.KEY_A and (action == glfw.PRESS or action == glfw.REPEAT):
-        cameraPos -= glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
+        if skybox(cameraPos - glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
+):
+            cameraPos -= glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
+        else:
+            cameraPos += glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
     if key == glfw.KEY_D and (action == glfw.PRESS or action == glfw.REPEAT):
-        cameraPos += glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
+        if skybox(cameraPos + glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
+):
+            cameraPos += glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
+        else:
+            cameraPos -= glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
     if key == glfw.KEY_P and action == glfw.PRESS:
         wireframe = not wireframe
 
@@ -554,6 +573,7 @@ while not glfw.window_should_close(window):
 
     now = glfw.get_time()
     print('{:3.4f} ms'.format(1000*(now - last_time)))
+    print(cameraPos)
     last_time = now
 
 print(scale)
