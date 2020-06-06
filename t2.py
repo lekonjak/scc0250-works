@@ -698,7 +698,7 @@ def view():
 def projection():
     global altura, largura
     #                                fov                aspect ratio    near  far
-    mat_projection = glm.perspective(glm.radians(90.0), largura/altura, 0.01, 5000.0)
+    mat_projection = glm.perspective(glm.radians(90.0), largura/altura, 1, 5000.0)
     mat_projection = np.array(mat_projection)
     return mat_projection
 
