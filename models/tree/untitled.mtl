@@ -1,0 +1,49 @@
+# Blender MTL File: 'None'
+# Material Count: 4
+
+newmtl AS12_Bark1
+Ns 50.781251
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump AS12_Murraya_koenigii_Curry_Leaf_Tree_obj/Models/as12brk1.tif
+map_Kd AS12_Murraya_koenigii_Curry_Leaf_Tree_obj/Models/as12brk1.tif
+
+newmtl AS12_Branch1
+Ns 50.781251
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd AS12_Murraya_koenigii_Curry_Leaf_Tree_obj/Models/as12brn1.tif
+
+newmtl AS12_Leaf1
+Ns 50.781251
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd AS12_Murraya_koenigii_Curry_Leaf_Tree_obj/Models/as12lef1.tif
+map_d AS12_Murraya_koenigii_Curry_Leaf_Tree_obj/Models/as12lef1.tif
+
+newmtl AS12_Leaf2
+Ns 50.781251
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd AS12_Murraya_koenigii_Curry_Leaf_Tree_obj/Models/as12lef2.tif
+map_d AS12_Murraya_koenigii_Curry_Leaf_Tree_obj/Models/as12lef2.tif

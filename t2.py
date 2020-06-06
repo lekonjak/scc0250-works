@@ -182,11 +182,12 @@ for face in modelo['faces']:
         vertices_list.append(modelo['vertices'][vertice_id-1])
     for texture_id in face[1]:
         textures_coord_list.append(modelo['texture'][texture_id-1])
-modelos['skybox']['size'] = len(vertices_list) - modelos['skybox']['start']
+modelos['skybox']['end'] = len(vertices_list)
+modelos['skybox']['size'] = modelos['skybox']['end'] - modelos['skybox']['start']
 modelos['skybox']['texture_id'] = texture_count
 load_texture_from_file(modelos['skybox']['texture_id'], 'models/skybox/Daylight Box.png')
 texture_count += 1
-
+print(f"Quantidade de vértices de skybox.obj {modelos['skybox']['size']}")
 
 # Gramado
 modelo = load_model_from_file('models/terrain/terreno.obj')
@@ -198,13 +199,15 @@ for face in modelo['faces']:
         vertices_list.append(modelo['vertices'][vertice_id-1])
     for texture_id in face[1]:
         textures_coord_list.append(modelo['texture'][texture_id-1])
-modelos['terrain']['size'] = len(vertices_list) - modelos['terrain']['start']
+modelos['terrain']['end'] = len(vertices_list)
+modelos['terrain']['size'] = modelos['terrain']['end'] - modelos['terrain']['start']
 modelos['terrain']['texture_id'] = texture_count
 load_texture_from_file(modelos['terrain']['texture_id'], 'models/terrain/grass.jpg')
 texture_count += 1
+print(f"Quantidade de vértices de terrain.obj {modelos['terrain']['size']}")
 
 # Rua
-modelo = load_model_from_file('models/terrain/terreno.obj')
+modelo = load_model_from_file('models/terrain/road.obj')
 modelos['road'] = {}
 modelos['road']['n_texturas'] = 1
 modelos['road']['start'] = len(vertices_list)
@@ -213,10 +216,12 @@ for face in modelo['faces']:
         vertices_list.append(modelo['vertices'][vertice_id-1])
     for texture_id in face[1]:
         textures_coord_list.append(modelo['texture'][texture_id-1])
-modelos['road']['size'] = len(vertices_list) - modelos['road']['start']
+modelos['road']['end'] = len(vertices_list)
+modelos['road']['size'] = modelos['road']['end'] - modelos['road']['start']
 modelos['road']['texture_id'] = texture_count
-load_texture_from_file(modelos['road']['texture_id'], 'models/terrain/road2.jpg')
+load_texture_from_file(modelos['road']['texture_id'], 'models/terrain/road.jpg')
 texture_count += 1
+print(f"Quantidade de vértices de road.obj {modelos['road']['size']}")
 
 # Casa
 modelo = load_model_from_file('models/house/untitled.obj')
@@ -229,10 +234,12 @@ for face in modelo['faces']:
         vertices_list.append(modelo['vertices'][vertice_id-1])
     for texture_id in face[1]:
         textures_coord_list.append(modelo['texture'][texture_id-1])
-modelos['house']['size'] = len(vertices_list) - modelos['house']['start']
+modelos['house']['end'] = len(vertices_list)
+modelos['house']['size'] = modelos['house']['end'] - modelos['house']['start']
 modelos['house']['texture_id'] = texture_count
 load_texture_from_file(modelos['house']['texture_id'], 'models/house/Hut_Low_lambert1_AlbedoTransparency.jpg')
 texture_count += 1
+print(f"Quantidade de vértices de house.obj {modelos['house']['size']}")
 
 # Denis
 modelo = load_model_from_file('models/person/denis_30k.obj')
@@ -245,10 +252,12 @@ for face in modelo['faces']:
         vertices_list.append(modelo['vertices'][vertice_id-1])
     for texture_id in face[1]:
         textures_coord_list.append(modelo['texture'][texture_id-1])
-modelos['person']['size'] = len(vertices_list) - modelos['person']['start']
+modelos['person']['end'] = len(vertices_list)
+modelos['person']['size'] = modelos['person']['end'] - modelos['person']['start']
 modelos['person']['texture_id'] = texture_count
 load_texture_from_file(modelos['person']['texture_id'], 'models/person/denis.jpg')
 texture_count += 1
+print(f"Quantidade de vértices de person.obj {modelos['person']['size']}")
 
 # Knuckles
 modelo = load_model_from_file('models/uganda/Knuckles.obj')
@@ -261,10 +270,12 @@ for face in modelo['faces']:
         vertices_list.append(modelo['vertices'][vertice_id-1])
     for texture_id in face[1]:
         textures_coord_list.append(modelo['texture'][texture_id-1])
-modelos['uganda_knuckles']['size'] = len(vertices_list) - modelos['uganda_knuckles']['start']
+modelos['uganda_knuckles']['end'] = len(vertices_list)
+modelos['uganda_knuckles']['size'] = modelos['uganda_knuckles']['end'] - modelos['uganda_knuckles']['start']
 modelos['uganda_knuckles']['texture_id'] = texture_count
 load_texture_from_file(modelos['uganda_knuckles']['texture_id'], 'models/uganda/Knuckles_Texture.jpg')
 texture_count += 1
+print(f"Quantidade de vértices de uganda_knuckles.obj {modelos['uganda_knuckles']['size']}")
 
 # Statue
 modelo = load_model_from_file('models/statue2/untitled.obj')
@@ -277,26 +288,37 @@ for face in modelo['faces']:
         vertices_list.append(modelo['vertices'][vertice_id-1])
     for texture_id in face[1]:
         textures_coord_list.append(modelo['texture'][texture_id-1])
-modelos['statue']['size'] = len(vertices_list) - modelos['statue']['start']
+modelos['statue']['end'] = len(vertices_list)
+modelos['statue']['size'] = modelos['statue']['end'] - modelos['statue']['start']
 modelos['statue']['texture_id'] = texture_count
 load_texture_from_file(modelos['statue']['texture_id'], 'models/statue2/DavidFixedDiff.jpg')
 texture_count += 1
+print(f"Quantidade de vértices de statue.obj {modelos['statue']['size']}")
 
 # Tree
-modelo = load_model_from_file('models/tree/tree_X12_+X1_Rock_Pack.obj')
+modelo = load_model_from_file('models/tree/untitled.obj')
 modelos['tree'] = {}
-modelos['tree']['n_texturas'] = 1
+modelos['tree']['n_texturas'] = 4
 modelos['tree']['start'] = len(vertices_list)
 print('Processando modelo tree.obj')
+faces_visited = []
 for face in modelo['faces']:
+    if face[2] not in faces_visited:
+        modelos['tree'][f'{face[2]}'] = len(vertices_list)
+        faces_visited.append(face[2])
     for vertice_id in face[0]:
         vertices_list.append(modelo['vertices'][vertice_id-1])
     for texture_id in face[1]:
         textures_coord_list.append(modelo['texture'][texture_id-1])
-modelos['tree']['size'] = len(vertices_list) - modelos['tree']['start']
+modelos['tree']['end'] = len(vertices_list)
+modelos['tree']['size'] = modelos['tree']['end'] - modelos['tree']['start']
 modelos['tree']['texture_id'] = texture_count
-load_texture_from_file(modelos['tree']['texture_id'], 'models/tree/_6_tree.jpg')
-texture_count += 1
+load_texture_from_file(modelos['tree']['texture_id'], 'models/tree/AS12_Murraya_koenigii_Curry_Leaf_Tree_obj/Models/as12brk1.tif')
+load_texture_from_file(modelos['tree']['texture_id']+1, 'models/tree/AS12_Murraya_koenigii_Curry_Leaf_Tree_obj/Models/as12brn1.tif')
+load_texture_from_file(modelos['tree']['texture_id']+2, 'models/tree/AS12_Murraya_koenigii_Curry_Leaf_Tree_obj/Models/as12lef1.tif')
+load_texture_from_file(modelos['tree']['texture_id']+3, 'models/tree/AS12_Murraya_koenigii_Curry_Leaf_Tree_obj/Models/as12lef2.tif')
+texture_count += modelos['tree']['n_texturas']
+print(f"Quantidade de vértices de tree.obj {modelos['tree']['size']}")
 
 # Deer
 modelo = load_model_from_file('models/deer/untitled.obj')
@@ -309,10 +331,12 @@ for face in modelo['faces']:
         vertices_list.append(modelo['vertices'][vertice_id-1])
     for texture_id in face[1]:
         textures_coord_list.append(modelo['texture'][texture_id-1])
-modelos['deer']['size'] = len(vertices_list) - modelos['deer']['start']
+modelos['deer']['end'] = len(vertices_list)
+modelos['deer']['size'] = modelos['deer']['end'] - modelos['deer']['start']
 modelos['deer']['texture_id'] = texture_count
 load_texture_from_file(modelos['deer']['texture_id'], 'models/deer/Diffuse.jpg')
 texture_count += 1
+print(f"Quantidade de vértices de deer.obj {modelos['deer']['size']}")
 
 # Bench
 modelo = load_model_from_file('models/bench/uploads_files_839016_OutdoorParkBenches(1).obj')
@@ -320,15 +344,22 @@ modelos['bench'] = {}
 modelos['bench']['n_texturas'] = 2
 modelos['bench']['start'] = len(vertices_list)
 print('Processando modelo bench.obj')
+faces_visited = []
 for face in modelo['faces']:
+    if face[2] not in faces_visited:
+        modelos['bench'][f'{face[2]}'] = len(vertices_list)
+        faces_visited.append(face[2])
     for vertice_id in face[0]:
         vertices_list.append(modelo['vertices'][vertice_id-1])
     for texture_id in face[1]:
         textures_coord_list.append(modelo['texture'][texture_id-1])
+modelos['bench']['end'] = len(vertices_list)
 modelos['bench']['size'] = len(vertices_list) - modelos['bench']['start']
 modelos['bench']['texture_id'] = texture_count
 load_texture_from_file(modelos['bench']['texture_id'], 'models/bench/OutdoorParkBenches_woods_BaseColor.jpg')
-texture_count += 2
+load_texture_from_file(modelos['bench']['texture_id']+1, 'models/bench/OutdoorParkBenches_Steel_BaseColor.png')
+texture_count += modelos['bench']['n_texturas']
+print(f"Quantidade de vértices de bench.obj {modelos['bench']['size']}")
 
 print(modelos)
 
@@ -471,21 +502,22 @@ def draw_terrain():
     glDrawArrays(GL_TRIANGLES, modelos['terrain']['start'], modelos['terrain']['size'])
 
 def draw_road():
-    angle = 90.0;
-    r_x = 0.0; r_y = 1.0; r_z = 0.0;
-    t_x = 600.0; t_y = 1.0; t_z = 0.0;
-    s_x = 102.4; s_z = 1024; s_y = 1;
-    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
-    loc_model = glGetUniformLocation(program, "model")
-    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
-    glBindTexture(GL_TEXTURE_2D, modelos['road']['texture_id'])
-    glDrawArrays(GL_TRIANGLES, modelos['road']['start'], modelos['road']['size'])
+    for i in range(-12,13):
+        angle = 90.0;
+        r_x = 0.0; r_y = 1.0; r_z = 0.0;
+        t_x = 600.0; t_y = 1.0; t_z = i*100.0;
+        s_x = 100; s_z = 100; s_y = 1;
+        mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+        loc_model = glGetUniformLocation(program, "model")
+        glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+        glBindTexture(GL_TEXTURE_2D, modelos['road']['texture_id'])
+        glDrawArrays(GL_TRIANGLES, modelos['road']['start'], modelos['road']['size'])
 
 def draw_house():
     angle = 0.0
     r_x = 0.0; r_y = 1.0; r_z = 0.0
     t_x = 0.0; t_y = 0.0; t_z = 600.0
-    s_x = s_y = s_z = 4;
+    s_x = s_y = s_z = 5;
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
@@ -533,8 +565,14 @@ def draw_tree_1():
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id']+3)
+    glDrawArrays(GL_TRIANGLES, modelos['tree']['AS12_Leaf2'], modelos['tree']['AS12_Leaf1']-modelos['tree']['AS12_Leaf2'])
+    glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id']+2)
+    glDrawArrays(GL_TRIANGLES, modelos['tree']['AS12_Leaf1'], modelos['tree']['AS12_Bark1']-modelos['tree']['AS12_Leaf1'])
     glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id'])
-    glDrawArrays(GL_TRIANGLES, modelos['tree']['start'], modelos['tree']['size'])
+    glDrawArrays(GL_TRIANGLES, modelos['tree']['AS12_Bark1'], modelos['tree']['AS12_Branch1']-modelos['tree']['AS12_Bark1'])
+    glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id']+1)
+    glDrawArrays(GL_TRIANGLES, modelos['tree']['AS12_Branch1'], modelos['tree']['end']-modelos['tree']['AS12_Branch1'])
 
 def draw_tree_2():
     angle = 0.0;
@@ -544,8 +582,14 @@ def draw_tree_2():
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id']+3)
+    glDrawArrays(GL_TRIANGLES, modelos['tree']['AS12_Leaf2'], modelos['tree']['AS12_Leaf1']-modelos['tree']['AS12_Leaf2'])
+    glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id']+2)
+    glDrawArrays(GL_TRIANGLES, modelos['tree']['AS12_Leaf1'], modelos['tree']['AS12_Bark1']-modelos['tree']['AS12_Leaf1'])
     glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id'])
-    glDrawArrays(GL_TRIANGLES, modelos['tree']['start'], modelos['tree']['size'])
+    glDrawArrays(GL_TRIANGLES, modelos['tree']['AS12_Bark1'], modelos['tree']['AS12_Branch1']-modelos['tree']['AS12_Bark1'])
+    glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id']+1)
+    glDrawArrays(GL_TRIANGLES, modelos['tree']['AS12_Branch1'], modelos['tree']['end']-modelos['tree']['AS12_Branch1'])
 
 def draw_tree_3():
     angle = 30.0;
@@ -555,8 +599,14 @@ def draw_tree_3():
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id']+3)
+    glDrawArrays(GL_TRIANGLES, modelos['tree']['AS12_Leaf2'], modelos['tree']['AS12_Leaf1']-modelos['tree']['AS12_Leaf2'])
+    glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id']+2)
+    glDrawArrays(GL_TRIANGLES, modelos['tree']['AS12_Leaf1'], modelos['tree']['AS12_Bark1']-modelos['tree']['AS12_Leaf1'])
     glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id'])
-    glDrawArrays(GL_TRIANGLES, modelos['tree']['start'], modelos['tree']['size'])
+    glDrawArrays(GL_TRIANGLES, modelos['tree']['AS12_Bark1'], modelos['tree']['AS12_Branch1']-modelos['tree']['AS12_Bark1'])
+    glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id']+1)
+    glDrawArrays(GL_TRIANGLES, modelos['tree']['AS12_Branch1'], modelos['tree']['end']-modelos['tree']['AS12_Branch1'])
 
 def draw_deer(angle):
     r_x = 0.0; r_y = 1.0; r_z = 0.0
@@ -577,8 +627,9 @@ def draw_bench():
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     glBindTexture(GL_TEXTURE_2D, modelos['bench']['texture_id'])
-    glDrawArrays(GL_TRIANGLES, modelos['bench']['start'], modelos['bench']['size'])
-
+    glDrawArrays(GL_TRIANGLES, modelos['bench']['start'], modelos['bench']['Steel']-modelos['bench']['woods'])
+    glBindTexture(GL_TEXTURE_2D, modelos['bench']['texture_id']+1)
+    glDrawArrays(GL_TRIANGLES, modelos['bench']['Steel'], modelos['bench']['end']-modelos['bench']['Steel'])
 #}}}
 #{{{ MODEL VIEW PROJECTION
 
@@ -615,6 +666,9 @@ glEnable(GL_DEPTH_TEST)
 wave_obj = sa.WaveObject.from_wave_file("media/floral.wav")
 play_obj = wave_obj.play()
 
+last = glfw.get_time()
+nbframes = 0
+
 while not glfw.window_should_close(window):
     glfw.poll_events()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -643,6 +697,13 @@ while not glfw.window_should_close(window):
     mat_projection = projection()
     loc_projection = glGetUniformLocation(program, "projection")
     glUniformMatrix4fv(loc_projection, 1, GL_FALSE, mat_projection)
+
+    now = glfw.get_time()
+    nbframes += 1
+    if now - last >= 1.0:
+        print(' {:2.2f} fps'.format( nbframes/(now-last)), end='\r')
+        nbframes = 0
+        last += 1
 
     glfw.swap_buffers(window)
 
