@@ -152,7 +152,6 @@ def load_texture_from_file(texture_id, img_textura):
 texture_count = 0
 modelos = {}
 
-deer_angle = 0
 cameraSpeed = 5
 sensitivity = 0.15
 
@@ -185,7 +184,7 @@ for face in modelo['faces']:
 modelos['skybox']['end'] = len(vertices_list)
 modelos['skybox']['size'] = modelos['skybox']['end'] - modelos['skybox']['start']
 modelos['skybox']['texture_id'] = texture_count
-load_texture_from_file(modelos['skybox']['texture_id'], 'models/skybox/Daylight Box.png')
+load_texture_from_file(modelos['skybox']['texture_id'], 'models/skybox/lol.png')
 texture_count += 1
 print(f"Quantidade de vértices de skybox.obj {modelos['skybox']['size']}")
 
@@ -313,10 +312,10 @@ for face in modelo['faces']:
 modelos['tree']['end'] = len(vertices_list)
 modelos['tree']['size'] = modelos['tree']['end'] - modelos['tree']['start']
 modelos['tree']['texture_id'] = texture_count
-load_texture_from_file(modelos['tree']['texture_id'], 'models/tree/AS12_Murraya_koenigii_Curry_Leaf_Tree_obj/Models/as12brk1.tif')
-load_texture_from_file(modelos['tree']['texture_id']+1, 'models/tree/AS12_Murraya_koenigii_Curry_Leaf_Tree_obj/Models/as12brn1.tif')
-load_texture_from_file(modelos['tree']['texture_id']+2, 'models/tree/AS12_Murraya_koenigii_Curry_Leaf_Tree_obj/Models/as12lef1.tif')
-load_texture_from_file(modelos['tree']['texture_id']+3, 'models/tree/AS12_Murraya_koenigii_Curry_Leaf_Tree_obj/Models/as12lef2.tif')
+load_texture_from_file(modelos['tree']['texture_id'], 'models/tree/as12brk1.tif')
+load_texture_from_file(modelos['tree']['texture_id']+1, 'models/tree/as12brn1.tif')
+load_texture_from_file(modelos['tree']['texture_id']+2, 'models/tree/as12lef1.tif')
+load_texture_from_file(modelos['tree']['texture_id']+3, 'models/tree/as12lef2.tif')
 texture_count += modelos['tree']['n_texturas']
 print(f"Quantidade de vértices de tree.obj {modelos['tree']['size']}")
 
@@ -360,6 +359,30 @@ load_texture_from_file(modelos['bench']['texture_id'], 'models/bench/OutdoorPark
 load_texture_from_file(modelos['bench']['texture_id']+1, 'models/bench/OutdoorParkBenches_Steel_BaseColor.png')
 texture_count += modelos['bench']['n_texturas']
 print(f"Quantidade de vértices de bench.obj {modelos['bench']['size']}")
+
+# Bus
+modelo = load_model_from_file('models/bus/bus.obj')
+modelos['bus'] = {}
+modelos['bus']['n_texturas'] = 3
+modelos['bus']['start'] = len(vertices_list)
+print('Processando modelo bus.obj')
+faces_visited = []
+for face in modelo['faces']:
+    if face[2] not in faces_visited:
+        modelos['bus'][f'{face[2]}'] = len(vertices_list)
+        faces_visited.append(face[2])
+    for vertice_id in face[0]:
+        vertices_list.append(modelo['vertices'][vertice_id-1])
+    for texture_id in face[1]:
+        textures_coord_list.append(modelo['texture'][texture_id-1])
+modelos['bus']['end'] = len(vertices_list)
+modelos['bus']['size'] = modelos['bus']['end'] - modelos['bus']['start']
+modelos['bus']['texture_id'] = texture_count
+load_texture_from_file(modelos['bus']['texture_id'], 'models/bus/Textures/wheel_d.jpg')
+load_texture_from_file(modelos['bus']['texture_id']+1, 'models/bus/Textures/inside_d.jpg')
+load_texture_from_file(modelos['bus']['texture_id']+2, 'models/bus/Textures/corpus_d.jpg')
+texture_count += modelos['bus']['n_texturas']
+print(f"Quantidade de vértices de bus.obj {modelos['bus']['size']}")
 
 print(modelos)
 
@@ -462,8 +485,8 @@ def mouse_event(window, xpos, ypos):
     yaw += xoffset;
     pitch += yoffset;
 
-    if pitch >= 90.0: pitch = 90.0
-    if pitch <= -90.0: pitch = -90.0
+    #if pitch >= 90.0: pitch = 90.0
+    #if pitch <= -90.0: pitch = -90.0
 
     front = glm.vec3()
     front.x = math.cos(glm.radians(yaw)) * math.cos(glm.radians(pitch))
@@ -560,7 +583,7 @@ def draw_statue():
 def draw_tree_1():
     angle = 0.0;
     r_x = 0.0; r_y = 1.0; r_z = 0.0
-    t_x = 50.0; t_y = 2.0; t_z = 20.0
+    t_x = 50.0; t_y = 2.0; t_z = 50.0
     s_x = s_y = s_z = 100
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
@@ -608,9 +631,10 @@ def draw_tree_3():
     glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id']+1)
     glDrawArrays(GL_TRIANGLES, modelos['tree']['AS12_Branch1'], modelos['tree']['end']-modelos['tree']['AS12_Branch1'])
 
-def draw_deer(angle):
+def draw_deer():
+    angle = 0
     r_x = 0.0; r_y = 1.0; r_z = 0.0
-    t_x = 0.0; t_y = 2.0; t_z = 0.0
+    t_x = 600.0; t_y = 2.0; t_z = -400.0
     s_x = s_y = s_z = 90
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
@@ -630,6 +654,29 @@ def draw_bench():
     glDrawArrays(GL_TRIANGLES, modelos['bench']['start'], modelos['bench']['Steel']-modelos['bench']['woods'])
     glBindTexture(GL_TEXTURE_2D, modelos['bench']['texture_id']+1)
     glDrawArrays(GL_TRIANGLES, modelos['bench']['Steel'], modelos['bench']['end']-modelos['bench']['Steel'])
+
+def draw_bus(bus_z_pos):
+    angle = -90
+    r_x = 0.0; r_y = 1.0; r_z = 0.0
+    t_x = -600.0; t_y = 2.0; t_z = bus_z_pos
+    s_x = s_y = s_z = 0.3
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    glBindTexture(GL_TEXTURE_2D, modelos['bus']['texture_id'])
+    glDrawArrays(GL_TRIANGLES, modelos['bus']['Wheel'], modelos['bus']['Glass']-modelos['bus']['Wheel'])
+    glBindTexture(GL_TEXTURE_2D, modelos['bus']['texture_id']+1)
+    glDrawArrays(GL_TRIANGLES, modelos['bus']['Inside'], modelos['bus']['Wheel']-modelos['bus']['Inside'])
+    glBindTexture(GL_TEXTURE_2D, modelos['bus']['texture_id']+2)
+    glDrawArrays(GL_TRIANGLES, modelos['bus']['Corpus'], modelos['bus']['Inside']-modelos['bus']['Corpus'])
+    """
+    'Corpus': 2348841
+ 'Inside': 2416218
+ 'Wheel': 2506341
+ 'Glass': 2517957
+ 'end': 2518713
+    """
+
 #}}}
 #{{{ MODEL VIEW PROJECTION
 
@@ -669,6 +716,8 @@ play_obj = wave_obj.play()
 last = glfw.get_time()
 nbframes = 0
 
+bus_z_pos = -1300
+
 while not glfw.window_should_close(window):
     glfw.poll_events()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -687,8 +736,12 @@ while not glfw.window_should_close(window):
     draw_tree_2()
     draw_tree_3()
     draw_bench()
-    draw_deer(deer_angle)
-    deer_angle += 0.5
+    draw_deer()
+    draw_bus(bus_z_pos)
+    bus_z_pos += 5
+
+    if bus_z_pos > 1300:
+        bus_z_pos = -1300
 
     mat_view = view()
     loc_view = glGetUniformLocation(program, "view")
