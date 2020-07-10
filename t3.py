@@ -35,7 +35,6 @@ vertex_code = """
         attribute vec2 texture_coord;
         attribute vec3 normals;
 
-
         varying vec2 out_texture;
         varying vec3 out_fragPos;
         varying vec3 out_normal;
@@ -64,7 +63,7 @@ fragment_code = """
 	uniform vec3 lightColor2;
 
         // parametro com a cor da(s) fonte(s) de iluminacao
-        vec3 lightColor = vec3(1.0, 1.0, 1.0);
+        vec3 lightColor = vec3(0.0, 1.0, 1.0);
 
         varying vec2 out_texture;
         varying vec3 out_normal;
@@ -74,30 +73,30 @@ fragment_code = """
         void main(){
             vec3 ambient = ka * lightColor;
             // Luz #1
-            vec3 norm1 = normalize(out_normal); // normaliza vetores perpendiculares
-            vec3 lightDir1 = normalize(lightPos1 - out_fragPos); // direcao da luz
-            float diff1 = max(dot(norm1, lightDir1), 0.0); // verifica limite angular (entre 0 e 90)
-            vec3 diffuse1 = kd * diff1 * lightColor; // iluminacao difusa
+            vec3 norm1 = normalize(out_normal);
+            vec3 lightDir1 = normalize(lightPos1 - out_fragPos);
+            float diff1 = max(dot(norm1, lightDir1), 0.0);
+            vec3 diffuse1 = kd * diff1 * lightColor;
 
-            vec3 viewDir1 = normalize(viewPos - out_fragPos); // direcao do observador/camera
-            vec3 reflectDir1 = reflect(-lightDir1, norm1); // direcao da reflexao
+            vec3 viewDir1 = normalize(viewPos - out_fragPos);
+            vec3 reflectDir1 = reflect(-lightDir1, norm1);
             float spec1 = pow(max(dot(viewDir1, reflectDir1), 0.0), ns);
             vec3 specular1 = ks * spec1 * lightColor;
 
             // Luz #2
-            vec3 norm2 = normalize(out_normal); // normaliza vetores perpendiculares
-            vec3 lightDir2 = normalize(lightPos2 - out_fragPos); // direcao da luz
-            float diff2 = max(dot(norm2, lightDir2), 0.0); // verifica limite angular (entre 0 e 90)
-            vec3 diffuse2 = kd * diff2 * lightColor2; // iluminacao difusa
+            vec3 norm2 = normalize(out_normal);
+            vec3 lightDir2 = normalize(lightPos2 - out_fragPos);
+            float diff2 = max(dot(norm2, lightDir2), 0.0);
+            vec3 diffuse2 = kd * diff2 * lightColor2;
 
-            vec3 viewDir2 = normalize(viewPos - out_fragPos); // direcao do observador/camera
-            vec3 reflectDir2 = reflect(-lightDir2, norm2); // direcao da reflexao
+            vec3 viewDir2 = normalize(viewPos - out_fragPos);
+            vec3 reflectDir2 = reflect(-lightDir2, norm2);
             float spec2 = pow(max(dot(viewDir2, reflectDir2), 0.0), ns);
             vec3 specular2 = ks * spec2 * lightColor2;
 
             // Combinando as duas fontes
             vec4 texture = texture2D(samplerTexture, out_texture);
-            vec4 result = vec4((ambient + diffuse1 + diffuse2 + specular1 + specular2),1.0) * texture; // aplica iluminacao
+            vec4 result = vec4((ambient + diffuse1 + diffuse2 + specular1 + specular2),1.0) * texture;
             gl_FragColor = result;
         }
         """
@@ -227,7 +226,7 @@ glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 glEnable(GL_LINE_SMOOTH)
 
 glEnable(GL_TEXTURE_2D)
-qtd_texturas = 10
+qtd_texturas = 100
 textures = glGenTextures(qtd_texturas)
 
 vertices_list = []
@@ -254,7 +253,7 @@ texture_count += 1
 print(f"Quantidade de vértices de skybox.obj {modelos['skybox']['size']}")
 
 # Gramado
-modelo = load_model_from_file('models/terrain/gramado.obj')
+modelo = load_model_from_file('models/terrain/terreno.obj')
 modelos['terrain'] = {}
 modelos['terrain']['n_texturas'] = 1
 modelos['terrain']['start'] = len(vertices_list)
@@ -439,35 +438,36 @@ print(f"Quantidade de vértices de deer.obj {modelos['deer']['size']}")
 #modelos['bench']['size'] = len(vertices_list) - modelos['bench']['start']
 #modelos['bench']['texture_id'] = texture_count
 #load_texture_from_file(modelos['bench']['texture_id'], 'models/bench/OutdoorParkBenches_woods_BaseColor.jpg')
-#load_texture_from_file(modelos['bench']['texture_id']+1, 'models/bench/OutdoorParkBenches_Steel_BaseColor.jpg')
+##load_texture_from_file(modelos['bench']['texture_id']+1, 'models/bench/OutdoorParkBenches_Steel_BaseColor.jpg')
 #texture_count += modelos['bench']['n_texturas']
 #print(f"Quantidade de vértices de bench.obj {modelos['bench']['size']}")
 
-## Bus
-#modelo = load_model_from_file('models/bus/bus.obj')
-#modelos['bus'] = {}
-#modelos['bus']['n_texturas'] = 3
-#modelos['bus']['start'] = len(vertices_list)
-#print('Processando modelo bus.obj')
-#faces_visited = []
-#for face in modelo['faces']:
-#    if face[2] not in faces_visited:
-#        modelos['bus'][f'{face[2]}'] = len(vertices_list)
-#        faces_visited.append(face[2])
-#    for vertice_id in face[0]:
-#        vertices_list.append(modelo['vertices'][vertice_id-1])
-#    for texture_id in face[1]:
-#        textures_coord_list.append(modelo['texture'][texture_id-1])
-#    for normal_id in face[2]:
-#        normals_list.append( modelo['normals'][normal_id-1] )
-#modelos['bus']['end'] = len(vertices_list)
-#modelos['bus']['size'] = modelos['bus']['end'] - modelos['bus']['start']
-#modelos['bus']['texture_id'] = texture_count
-#load_texture_from_file(modelos['bus']['texture_id'], 'models/bus/Textures/wheel_d.jpg')
-#load_texture_from_file(modelos['bus']['texture_id']+1, 'models/bus/Textures/inside_d.jpg')
-#load_texture_from_file(modelos['bus']['texture_id']+2, 'models/bus/Textures/corpus_d.jpg')
-#texture_count += modelos['bus']['n_texturas']
-#print(f"Quantidade de vértices de bus.obj {modelos['bus']['size']}")
+# Bus
+modelo = load_model_from_file('models/bus/bus.obj')
+modelos['bus'] = {}
+modelos['bus']['n_texturas'] = 3
+modelos['bus']['start'] = len(vertices_list)
+print('Processando modelo bus.obj')
+faces_visited = []
+print(modelo['faces'])
+for face in modelo['faces']:
+    if face[3] not in faces_visited:
+        modelos['bus'][f'{face[3]}'] = len(vertices_list)
+        faces_visited.append(face[3])
+    for vertice_id in face[0]:
+        vertices_list.append(modelo['vertices'][vertice_id-1])
+    for texture_id in face[1]:
+        textures_coord_list.append(modelo['texture'][texture_id-1])
+    for normal_id in face[2]:
+        normals_list.append( modelo['normals'][normal_id-1] )
+modelos['bus']['end'] = len(vertices_list)
+modelos['bus']['size'] = modelos['bus']['end'] - modelos['bus']['start']
+modelos['bus']['texture_id'] = texture_count
+load_texture_from_file(modelos['bus']['texture_id'],   'models/bus/Textures/wheel_d.jpg')
+load_texture_from_file(modelos['bus']['texture_id']+1, 'models/bus/Textures/inside_d.jpg')
+load_texture_from_file(modelos['bus']['texture_id']+2, 'models/bus/Textures/corpus_d.jpg')
+texture_count += modelos['bus']['n_texturas']
+print(f"Quantidade de vértices de bus.obj {modelos['bus']['size']}")
 
 print(modelos)
 
@@ -697,7 +697,7 @@ def draw_house():
     glDrawArrays(GL_TRIANGLES, modelos['house']['start'], modelos['house']['size'])
 
 def draw_person():
-    angle = 90.0;
+    angle = 0.0;
     r_x = 0.0; r_y = 1.0; r_z = 0.0
     t_x = -680.0; t_y = 2.0; t_z = 0.0
     t_x = 0.0; t_y = 2.0; t_z = -100.0
@@ -747,7 +747,7 @@ def draw_uganda_knuckles():
     glDrawArrays(GL_TRIANGLES, modelos['uganda_knuckles']['start'], modelos['uganda_knuckles']['size'])
 
 def draw_statue():
-    angle = 180.0;
+    angle = 0.0;
     r_x = 0.0; r_y = 1.0; r_z = 0.0
     t_x = -610.0; t_y = 2.0; t_z = -90.0
     t_x = 100.0; t_y = 2.0; t_z = 0.0
@@ -756,7 +756,7 @@ def draw_statue():
     loc_model = glGetUniformLocation(program, "model")
     ka = 1.0
     kd = 1.0
-    ks = 0.0
+    ks = 1.0
     ns = 256
     loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_ka, ka)
@@ -855,8 +855,8 @@ def draw_bench():
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     glBindTexture(GL_TEXTURE_2D, modelos['bench']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['bench']['start'], modelos['bench']['Steel']-modelos['bench']['woods'])
-    glBindTexture(GL_TEXTURE_2D, modelos['bench']['texture_id']+1)
-    glDrawArrays(GL_TRIANGLES, modelos['bench']['Steel'], modelos['bench']['end']-modelos['bench']['Steel'])
+    #glBindTexture(GL_TEXTURE_2D, modelos['bench']['texture_id']+1)
+    #glDrawArrays(GL_TRIANGLES, modelos['bench']['Steel'], modelos['bench']['end']-modelos['bench']['Steel'])
 
 def draw_bus(bus_z_pos):
     angle = -90
@@ -917,7 +917,7 @@ eita = 0
 while not glfw.window_should_close(window):
     glfw.poll_events()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    glClearColor(1.0, 1.0, 1.0, 1.0)
+    glClearColor(0.0, 0.0, 0.0, 0.0)
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE if wireframe else GL_FILL)
 
@@ -933,7 +933,7 @@ while not glfw.window_should_close(window):
     #draw_tree_3()
     #draw_bench()
     draw_deer()
-    #draw_bus(bus_z_pos)
+    draw_bus(bus_z_pos)
     bus_z_pos += 5
 
     if bus_z_pos > 1300:
@@ -944,7 +944,7 @@ while not glfw.window_should_close(window):
     loc_light_pos = glGetUniformLocation(program, "lightPos1")
     glUniform3f(loc_light_pos, 500*math.sin(eita), 100, 500*math.cos(eita))
     loc_light_pos = glGetUniformLocation(program, "lightPos2")
-    glUniform3f(loc_light_pos, 500*math.sin(eita), 500*math.cos(eita), 100)
+    glUniform3f(loc_light_pos, 500*math.cos(eita), 100, 500*math.sin(eita))
 
     mat_view = view()
     loc_view = glGetUniformLocation(program, "view")
