@@ -706,6 +706,8 @@ def draw_person():
     loc_model = glGetUniformLocation(program, "model")
     ka = 1.0
     kd = 1.0
+    ks = 0.0
+    ns = 256
     loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_ka, ka)
     loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
@@ -730,6 +732,8 @@ def draw_uganda_knuckles():
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     ka = 1.0
     kd = 1.0
+    ks = 0.0
+    ns = 256
 
     loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_ka, ka)
@@ -752,6 +756,8 @@ def draw_statue():
     loc_model = glGetUniformLocation(program, "model")
     ka = 1.0
     kd = 1.0
+    ks = 0.0
+    ns = 256
     loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_ka, ka)
     loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
@@ -826,10 +832,16 @@ def draw_deer():
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     ka = 1.0
     kd = 1.0
+    ks = 0.0
+    ns = 256
     loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_ka, ka)
     loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_kd, kd)
+    loc_ks = glGetUniformLocation(program, "ks")
+    glUniform1f(loc_ks, ks)
+    loc_ns = glGetUniformLocation(program, "ns")
+    glUniform1f(loc_ns, ns)
     glBindTexture(GL_TEXTURE_2D, modelos['deer']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['deer']['start'], modelos['deer']['size'])
 
