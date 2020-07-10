@@ -53,10 +53,17 @@ vertex_code = """
         """
 
 fragment_code = """
-        uniform vec3 lightPos;
+        uniform vec3 lightPos1;
+        uniform vec3 lightPos2;
         uniform float ka;
         uniform float kd;
 
+        uniform vec3 viewPos;
+        uniform float ks;
+        uniform float ns;
+	uniform vec3 lightColor2;
+
+        // parametro com a cor da(s) fonte(s) de iluminacao
         vec3 lightColor = vec3(1.0, 1.0, 1.0);
 
         varying vec2 out_texture;
@@ -66,14 +73,31 @@ fragment_code = """
 
         void main(){
             vec3 ambient = ka * lightColor;
+            // Luz #1
+            vec3 norm1 = normalize(out_normal); // normaliza vetores perpendiculares
+            vec3 lightDir1 = normalize(lightPos1 - out_fragPos); // direcao da luz
+            float diff1 = max(dot(norm1, lightDir1), 0.0); // verifica limite angular (entre 0 e 90)
+            vec3 diffuse1 = kd * diff1 * lightColor; // iluminacao difusa
 
-            vec3 norm = normalize(out_normal);
-            vec3 lightDir = normalize(lightPos - out_fragPos);
-            float diff = max(dot(norm, lightDir), 0.0);
-            vec3 diffuse = kd * diff * lightColor;
+            vec3 viewDir1 = normalize(viewPos - out_fragPos); // direcao do observador/camera
+            vec3 reflectDir1 = reflect(-lightDir1, norm1); // direcao da reflexao
+            float spec1 = pow(max(dot(viewDir1, reflectDir1), 0.0), ns);
+            vec3 specular1 = ks * spec1 * lightColor;
 
+            // Luz #2
+            vec3 norm2 = normalize(out_normal); // normaliza vetores perpendiculares
+            vec3 lightDir2 = normalize(lightPos2 - out_fragPos); // direcao da luz
+            float diff2 = max(dot(norm2, lightDir2), 0.0); // verifica limite angular (entre 0 e 90)
+            vec3 diffuse2 = kd * diff2 * lightColor2; // iluminacao difusa
+
+            vec3 viewDir2 = normalize(viewPos - out_fragPos); // direcao do observador/camera
+            vec3 reflectDir2 = reflect(-lightDir2, norm2); // direcao da reflexao
+            float spec2 = pow(max(dot(viewDir2, reflectDir2), 0.0), ns);
+            vec3 specular2 = ks * spec2 * lightColor2;
+
+            // Combinando as duas fontes
             vec4 texture = texture2D(samplerTexture, out_texture);
-            vec4 result = vec4((ambient + diffuse),1.0) * texture;
+            vec4 result = vec4((ambient + diffuse1 + diffuse2 + specular1 + specular2),1.0) * texture; // aplica iluminacao
             gl_FragColor = result;
         }
         """
@@ -187,6 +211,7 @@ cameraSpeed = 5
 sensitivity = 0.15
 
 shouldIncrement = True
+lightOn = True
 
 #loc_light_pos = glGetUniformLocation(program, "lightPos")
 #glUniform3f(loc_light_pos, 0, 100, 600)
@@ -502,7 +527,7 @@ wireframe = False
 def key_event(window,key,scancode,action,mods):
     global cameraPos, cameraFront, cameraUp
     global wireframe, scale, cameraSpeed, sensitivity
-    global shouldIncrement
+    global shouldIncrement, lightOn
 
     # quit simulation with <ESC> or Q
     if (key == glfw.KEY_Q or key == glfw.KEY_ESCAPE) and action == glfw.PRESS:
@@ -533,14 +558,14 @@ def key_event(window,key,scancode,action,mods):
     if key == glfw.KEY_SPACE and action == glfw.PRESS:
         shouldIncrement = not shouldIncrement
 
-    if key == 61 and mods == 0 and (action == glfw.PRESS or action == glfw.REPEAT):
-        cameraSpeed += 0.01
-    if key == 45 and mods == 0 and (action == glfw.PRESS or action == glfw.REPEAT):
-        cameraSpeed -= 0.01
-    if key == 61 and mods == 1 and (action == glfw.PRESS or action == glfw.REPEAT):
-        sensitivity += 0.01
-    if key == 45 and mods == 1 and (action == glfw.PRESS or action == glfw.REPEAT):
-        sensitivity -= 0.01
+    if key == glfw.KEY_L and action == glfw.PRESS:
+        loc_light = glGetUniformLocation(program, "lightColor2")
+        if lightOn:
+            glUniform3f(loc_light, 0.0, 0.0, 0.0)
+        else:
+            glUniform3f(loc_light, 1.0, 0.0, 0.0)
+
+        lightOn = not lightOn
 
 yaw = -90.0
 pitch = 0.0
@@ -561,8 +586,8 @@ def mouse_event(window, xpos, ypos):
     yaw += xoffset;
     pitch += yoffset;
 
-    #if pitch >= 90.0: pitch = 90.0
-    #if pitch <= -90.0: pitch = -90.0
+    if pitch >= 90.0: pitch = 90.0
+    if pitch <= -90.0: pitch = -90.0
 
     front = glm.vec3()
     front.x = math.cos(glm.radians(yaw)) * math.cos(glm.radians(pitch))
@@ -586,12 +611,18 @@ def draw_skybox():
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
-    ka = 0.0
+    ka = 1.0
     kd = 0.0
-    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+    ks = 0.0
+    ns = 256
+    loc_ka = glGetUniformLocation(program, "ka")
     glUniform1f(loc_ka, ka)
-    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
+    loc_kd = glGetUniformLocation(program, "kd")
     glUniform1f(loc_kd, kd)
+    loc_ks = glGetUniformLocation(program, "ks")
+    glUniform1f(loc_ks, ks)
+    loc_ns = glGetUniformLocation(program, "ns")
+    glUniform1f(loc_ns, ns)
     glBindTexture(GL_TEXTURE_2D, modelos['skybox']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['skybox']['start'], modelos['skybox']['size'])
 
@@ -603,12 +634,18 @@ def draw_terrain():
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
-    ka = 0.0
+    ka = 1.0
     kd = 1.0
-    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+    ks = 0.0
+    ns = 256
+    loc_ka = glGetUniformLocation(program, "ka")
     glUniform1f(loc_ka, ka)
-    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
+    loc_kd = glGetUniformLocation(program, "kd")
     glUniform1f(loc_kd, kd)
+    loc_ks = glGetUniformLocation(program, "ks")
+    glUniform1f(loc_ks, ks)
+    loc_ns = glGetUniformLocation(program, "ns")
+    glUniform1f(loc_ns, ns)
     glBindTexture(GL_TEXTURE_2D, modelos['terrain']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['terrain']['start'], modelos['terrain']['size'])
 
@@ -620,12 +657,18 @@ def draw_road():
         s_x = 100; s_z = 100; s_y = 1;
         mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
         loc_model = glGetUniformLocation(program, "model")
-        ka = 0.0
+        ka = 1.0
         kd = 1.0
+        ks = 0.0
+        ns = 256
         loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
         glUniform1f(loc_ka, ka)
         loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
         glUniform1f(loc_kd, kd)
+        loc_ks = glGetUniformLocation(program, "ks")
+        glUniform1f(loc_ks, ks)
+        loc_ns = glGetUniformLocation(program, "ns")
+        glUniform1f(loc_ns, ns)
         glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
         glBindTexture(GL_TEXTURE_2D, modelos['road']['texture_id'])
         glDrawArrays(GL_TRIANGLES, modelos['road']['start'], modelos['road']['size'])
@@ -637,12 +680,18 @@ def draw_house():
     s_x = s_y = s_z = 5;
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
-    ka = 0.0
+    ka = 1.0
     kd = 1.0
+    ks = 0.0
+    ns = 256
     loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_ka, ka)
     loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_kd, kd)
+    loc_ks = glGetUniformLocation(program, "ks")
+    glUniform1f(loc_ks, ks)
+    loc_ns = glGetUniformLocation(program, "ns")
+    glUniform1f(loc_ns, ns)
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     glBindTexture(GL_TEXTURE_2D, modelos['house']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['house']['start'], modelos['house']['size'])
@@ -655,12 +704,16 @@ def draw_person():
     s_x = s_y = s_z = 0.65;
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
-    ka = 0.0
+    ka = 1.0
     kd = 1.0
     loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_ka, ka)
     loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_kd, kd)
+    loc_ks = glGetUniformLocation(program, "ks")
+    glUniform1f(loc_ks, ks)
+    loc_ns = glGetUniformLocation(program, "ns")
+    glUniform1f(loc_ns, ns)
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     glBindTexture(GL_TEXTURE_2D, modelos['person']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['person']['start'], modelos['person']['size'])
@@ -675,13 +728,17 @@ def draw_uganda_knuckles():
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
-    ka = 0.0
+    ka = 1.0
     kd = 1.0
 
     loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_ka, ka)
     loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_kd, kd)
+    loc_ks = glGetUniformLocation(program, "ks")
+    glUniform1f(loc_ks, ks)
+    loc_ns = glGetUniformLocation(program, "ns")
+    glUniform1f(loc_ns, ns)
     glBindTexture(GL_TEXTURE_2D, modelos['uganda_knuckles']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['uganda_knuckles']['start'], modelos['uganda_knuckles']['size'])
 
@@ -693,12 +750,16 @@ def draw_statue():
     s_x = s_y = s_z = 0.35
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
-    ka = 0.0
+    ka = 1.0
     kd = 1.0
     loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_ka, ka)
     loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_kd, kd)
+    loc_ks = glGetUniformLocation(program, "ks")
+    glUniform1f(loc_ks, ks)
+    loc_ns = glGetUniformLocation(program, "ns")
+    glUniform1f(loc_ns, ns)
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     glBindTexture(GL_TEXTURE_2D, modelos['statue']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['statue']['start'], modelos['statue']['size'])
@@ -763,8 +824,8 @@ def draw_deer():
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
-    ka = 0.0
-    kd = 0.4
+    ka = 1.0
+    kd = 1.0
     loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_ka, ka)
     loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
@@ -868,8 +929,10 @@ while not glfw.window_should_close(window):
 
     if shouldIncrement:
         eita += 0.1
-    loc_light_pos = glGetUniformLocation(program, "lightPos")
+    loc_light_pos = glGetUniformLocation(program, "lightPos1")
     glUniform3f(loc_light_pos, 500*math.sin(eita), 100, 500*math.cos(eita))
+    loc_light_pos = glGetUniformLocation(program, "lightPos2")
+    glUniform3f(loc_light_pos, 500*math.sin(eita), 500*math.cos(eita), 100)
 
     mat_view = view()
     loc_view = glGetUniformLocation(program, "view")
@@ -879,13 +942,8 @@ while not glfw.window_should_close(window):
     loc_projection = glGetUniformLocation(program, "projection")
     glUniformMatrix4fv(loc_projection, 1, GL_FALSE, mat_projection)
 
-    now = glfw.get_time()
-    nbframes += 1
-    if now - last >= 1.0:
-        print('\r{:2.2f} fps'.format(nbframes/(now-last)), end='')
-        nbframes = 0
-        last += 1
-
+    loc_view_pos = glGetUniformLocation(program, "viewPos")
+    glUniform3f(loc_view_pos, cameraPos[0], cameraPos[1], cameraPos[2])
     glfw.swap_buffers(window)
 
 glfw.terminate()
