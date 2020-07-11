@@ -697,10 +697,9 @@ def draw_house():
     glDrawArrays(GL_TRIANGLES, modelos['house']['start'], modelos['house']['size'])
 
 def draw_person():
-    angle = 0.0;
+    angle = 90.0;
     r_x = 0.0; r_y = 1.0; r_z = 0.0
     t_x = -680.0; t_y = 2.0; t_z = 0.0
-    t_x = 0.0; t_y = 2.0; t_z = -100.0
     s_x = s_y = s_z = 0.65;
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
@@ -724,7 +723,6 @@ def draw_uganda_knuckles():
     angle = 0.0;
     r_x = 0.0; r_y = 0.0; r_z = 1.0
     t_x = 90.0; t_y = 2.0; t_z = 610.0
-    t_x = -100.0; t_y = 2.0; t_z = 0.0
     s_x = s_y = s_z = 8
 
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
@@ -747,10 +745,9 @@ def draw_uganda_knuckles():
     glDrawArrays(GL_TRIANGLES, modelos['uganda_knuckles']['start'], modelos['uganda_knuckles']['size'])
 
 def draw_statue():
-    angle = 0.0;
+    angle = 90.0;
     r_x = 0.0; r_y = 1.0; r_z = 0.0
     t_x = -610.0; t_y = 2.0; t_z = -90.0
-    t_x = 100.0; t_y = 2.0; t_z = 0.0
     s_x = s_y = s_z = 0.35
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
@@ -791,7 +788,6 @@ def draw_tree_2():
     angle = 0.0;
     r_x = 0.0; r_y = 1.0; r_z = 0.0
     t_x = -20.0; t_y = 2.0; t_z = -850.0
-    t_x = 0.0; t_y = 2.0; t_z = 0.0
     s_x = s_y = s_z = 85
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
