@@ -63,7 +63,7 @@ fragment_code = """
 	uniform vec3 lightColor2;
 
         // parametro com a cor da(s) fonte(s) de iluminacao
-        vec3 lightColor = vec3(0.0, 1.0, 1.0);
+        vec3 lightColor = vec3(1.0, 1.0, 1.0);
 
         varying vec2 out_texture;
         varying vec3 out_normal;
@@ -370,32 +370,32 @@ load_texture_from_file(modelos['statue']['texture_id'], 'models/statue2/DavidFix
 texture_count += 1
 print(f"Quantidade de vértices de statue.obj {modelos['statue']['size']}")
 
-## Tree
-#modelo = load_model_from_file('models/tree/untitled.obj')
-#modelos['tree'] = {}
-#modelos['tree']['n_texturas'] = 4
-#modelos['tree']['start'] = len(vertices_list)
-#print('Processando modelo tree.obj')
-#faces_visited = []
-#for face in modelo['faces']:
-#    if face[2] not in faces_visited:
-#        modelos['tree'][f'{face[2]}'] = len(vertices_list)
-#        faces_visited.append(face[2])
-#    for vertice_id in face[0]:
-#        vertices_list.append(modelo['vertices'][vertice_id-1])
-#    for texture_id in face[1]:
-#        textures_coord_list.append(modelo['texture'][texture_id-1])
-#    for normal_id in face[2]:
-#        normals_list.append(modelo['normals'][normal_id-1])
-#modelos['tree']['end'] = len(vertices_list)
-#modelos['tree']['size'] = modelos['tree']['end'] - modelos['tree']['start']
-#modelos['tree']['texture_id'] = texture_count
-#load_texture_from_file(modelos['tree']['texture_id'], 'models/tree/as12brk1.tif')
-#load_texture_from_file(modelos['tree']['texture_id']+1, 'models/tree/as12brn1.tif')
-#load_texture_from_file(modelos['tree']['texture_id']+2, 'models/tree/as12lef1.tif')
-#load_texture_from_file(modelos['tree']['texture_id']+3, 'models/tree/as12lef2.tif')
-#texture_count += modelos['tree']['n_texturas']
-#print(f"Quantidade de vértices de tree.obj {modelos['tree']['size']}")
+# Tree
+modelo = load_model_from_file('models/tree/untitled.obj')
+modelos['tree'] = {}
+modelos['tree']['n_texturas'] = 4
+modelos['tree']['start'] = len(vertices_list)
+print('Processando modelo tree.obj')
+faces_visited = []
+for face in modelo['faces']:
+    if face[3] not in faces_visited:
+        modelos['tree'][f'{face[3]}'] = len(vertices_list)
+        faces_visited.append(face[3])
+    for vertice_id in face[0]:
+        vertices_list.append(modelo['vertices'][vertice_id-1])
+    for texture_id in face[1]:
+        textures_coord_list.append(modelo['texture'][texture_id-1])
+    for normal_id in face[2]:
+        normals_list.append(modelo['normals'][normal_id-1])
+modelos['tree']['end'] = len(vertices_list)
+modelos['tree']['size'] = modelos['tree']['end'] - modelos['tree']['start']
+modelos['tree']['texture_id'] = texture_count
+load_texture_from_file(modelos['tree']['texture_id'], 'models/tree/as12brk1.tif')
+load_texture_from_file(modelos['tree']['texture_id']+1, 'models/tree/as12brn1.tif')
+load_texture_from_file(modelos['tree']['texture_id']+2, 'models/tree/as12lef1.tif')
+load_texture_from_file(modelos['tree']['texture_id']+3, 'models/tree/as12lef2.tif')
+texture_count += modelos['tree']['n_texturas']
+print(f"Quantidade de vértices de tree.obj {modelos['tree']['size']}")
 
 # Deer
 modelo = load_model_from_file('models/deer/banana.obj')
@@ -732,8 +732,8 @@ def draw_uganda_knuckles():
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     ka = 1.0
     kd = 1.0
-    ks = 0.0
-    ns = 256
+    ks = 1.0
+    ns = 1024
 
     loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_ka, ka)
