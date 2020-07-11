@@ -417,30 +417,30 @@ load_texture_from_file(modelos['deer']['texture_id'], 'models/deer/Diffuse.jpg')
 texture_count += 1
 print(f"Quantidade de vértices de deer.obj {modelos['deer']['size']}")
 
-## Bench
-#modelo = load_model_from_file('models/bench/uploads_files_839016_OutdoorParkBenches(1).obj')
-#modelos['bench'] = {}
-#modelos['bench']['n_texturas'] = 2
-#modelos['bench']['start'] = len(vertices_list)
-#print('Processando modelo bench.obj')
-#faces_visited = []
-#for face in modelo['faces']:
-#    if face[2] not in faces_visited:
-#        modelos['bench'][f'{face[2]}'] = len(vertices_list)
-#        faces_visited.append(face[2])
-#    for vertice_id in face[0]:
-#        vertices_list.append(modelo['vertices'][vertice_id-1])
-#    for texture_id in face[1]:
-#        textures_coord_list.append(modelo['texture'][texture_id-1])
-#    for normal_id in face[2]:
-#        normals_list.append( modelo['normals'][normal_id-1] )
-#modelos['bench']['end'] = len(vertices_list)
-#modelos['bench']['size'] = len(vertices_list) - modelos['bench']['start']
-#modelos['bench']['texture_id'] = texture_count
-#load_texture_from_file(modelos['bench']['texture_id'], 'models/bench/OutdoorParkBenches_woods_BaseColor.jpg')
-##load_texture_from_file(modelos['bench']['texture_id']+1, 'models/bench/OutdoorParkBenches_Steel_BaseColor.jpg')
-#texture_count += modelos['bench']['n_texturas']
-#print(f"Quantidade de vértices de bench.obj {modelos['bench']['size']}")
+# Bench
+modelo = load_model_from_file('models/bench/uploads_files_839016_OutdoorParkBenches(1).obj')
+modelos['bench'] = {}
+modelos['bench']['n_texturas'] = 2
+modelos['bench']['start'] = len(vertices_list)
+print('Processando modelo bench.obj')
+faces_visited = []
+for face in modelo['faces']:
+    if face[3] not in faces_visited:
+        modelos['bench'][f'{face[3]}'] = len(vertices_list)
+        faces_visited.append(face[3])
+    for vertice_id in face[0]:
+        vertices_list.append(modelo['vertices'][vertice_id-1])
+    for texture_id in face[1]:
+        textures_coord_list.append(modelo['texture'][texture_id-1])
+    for normal_id in face[2]:
+        normals_list.append( modelo['normals'][normal_id-1] )
+modelos['bench']['end'] = len(vertices_list)
+modelos['bench']['size'] = len(vertices_list) - modelos['bench']['start']
+modelos['bench']['texture_id'] = texture_count
+load_texture_from_file(modelos['bench']['texture_id'], 'models/bench/OutdoorParkBenches_woods_BaseColor.jpg')
+load_texture_from_file(modelos['bench']['texture_id']+1, 'models/bench/OutdoorParkBenches_Steel_BaseColor.jpg')
+texture_count += modelos['bench']['n_texturas']
+print(f"Quantidade de vértices de bench.obj {modelos['bench']['size']}")
 
 # Bus
 modelo = load_model_from_file('models/bus/bus.obj')
@@ -855,8 +855,8 @@ def draw_bench():
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     glBindTexture(GL_TEXTURE_2D, modelos['bench']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['bench']['start'], modelos['bench']['Steel']-modelos['bench']['woods'])
-    #glBindTexture(GL_TEXTURE_2D, modelos['bench']['texture_id']+1)
-    #glDrawArrays(GL_TRIANGLES, modelos['bench']['Steel'], modelos['bench']['end']-modelos['bench']['Steel'])
+    glBindTexture(GL_TEXTURE_2D, modelos['bench']['texture_id']+1)
+    glDrawArrays(GL_TRIANGLES, modelos['bench']['Steel'], modelos['bench']['end']-modelos['bench']['Steel'])
 
 def draw_bus(bus_z_pos):
     angle = -90
@@ -928,10 +928,10 @@ while not glfw.window_should_close(window):
     draw_person()
     draw_uganda_knuckles()
     draw_statue()
-    #draw_tree_1()
-    #draw_tree_2()
-    #draw_tree_3()
-    #draw_bench()
+    draw_tree_1()
+    draw_tree_2()
+    draw_tree_3()
+    draw_bench()
     draw_deer()
     draw_bus(bus_z_pos)
     bus_z_pos += 5
