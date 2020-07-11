@@ -909,6 +909,9 @@ nbframes = 0
 
 bus_z_pos = -1300
 eita = 0
+    
+loc_light_pos = glGetUniformLocation(program, "lightPos2")
+glUniform3f(loc_light_pos, -610.0, 20.0, -90.0)
 
 while not glfw.window_should_close(window):
     glfw.poll_events()
@@ -939,8 +942,6 @@ while not glfw.window_should_close(window):
         eita += 0.1
     loc_light_pos = glGetUniformLocation(program, "lightPos1")
     glUniform3f(loc_light_pos, 500*math.sin(eita), 100, 500*math.cos(eita))
-    loc_light_pos = glGetUniformLocation(program, "lightPos2")
-    glUniform3f(loc_light_pos, 500*math.cos(eita), 100, 500*math.sin(eita))
 
     mat_view = view()
     loc_view = glGetUniformLocation(program, "view")
