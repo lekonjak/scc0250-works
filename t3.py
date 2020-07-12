@@ -62,7 +62,7 @@ fragment_code = """
         uniform float ns;
 
         // parametro com a cor da(s) fonte(s) de iluminacao
-        vec3 lightColor = vec3(201.0/255.0, 226.0/255.0, 255.0/255.0);
+        uniform vec3 lightColor = vec3(201.0/255.0, 226.0/255.0, 255.0/255.0);
         uniform vec3 lightColor2;
 
         varying vec2 out_texture;
@@ -226,6 +226,8 @@ lightOn = False
 lpx = 0.0
 lpy = 0.0
 lpz = 0.0
+
+intensity = 1.0
 
 #loc_light_pos = glGetUniformLocation(program, "lightPos")
 #glUniform3f(loc_light_pos, 0, 100, 600)
@@ -541,7 +543,7 @@ wireframe = False
 def key_event(window,key,scancode,action,mods):
     global cameraPos, cameraFront, cameraUp
     global wireframe, scale, cameraSpeed, sensitivity
-    global shouldIncrement, lightOn
+    global shouldIncrement, lightOn, intensity
     global lpx, lpy, lpz
 
     # quit simulation with <ESC> or Q
@@ -568,7 +570,7 @@ def key_event(window,key,scancode,action,mods):
         else:
             cameraPos -= glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
 
-    if key == glfw.KEY_P and action == glfw.PRESS:
+    if key == glfw.KEY_O and action == glfw.PRESS:
         wireframe = not wireframe
 
     if key == glfw.KEY_SPACE and action == glfw.PRESS:
@@ -581,6 +583,17 @@ def key_event(window,key,scancode,action,mods):
         else:
             glUniform3f(loc_light, 255.0/255.0, 147.0/255.0, 41.0/255.0)
         lightOn = not lightOn
+    
+    if key == glfw.KEY_U and action == glfw.PRESS:
+        if intensity + 0.05 < 1.0:
+            intensity += 0.05
+        loc_light = glGetUniformLocation(program, "lightColor")
+        glUniform3f(loc_light, (201.0/255.0) * intensity, (226.0/255.0) * intensity, (255.0/255.0) * intensity )
+    if key == glfw.KEY_P and action == glfw.PRESS:
+        if intensity - 0.05 > 0.0:
+            intensity -= 0.05
+        loc_light = glGetUniformLocation(program, "lightColor")
+        glUniform3f(loc_light, (201.0/255.0) * intensity, (226.0/255.0) * intensity, (255.0/255.0) * intensity )
 
     if key == glfw.KEY_KP_8 and (action == glfw.PRESS or action == glfw.REPEAT):
         lpx += 10.0
