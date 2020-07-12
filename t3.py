@@ -23,7 +23,7 @@ glfw.window_hint(glfw.VISIBLE, glfw.TRUE);
 #glfw.window_hint(glfw.MAXIMIZED, glfw.TRUE)
 altura = 768
 largura = 768
-window = glfw.create_window(largura, altura, "T2", None, None)
+window = glfw.create_window(largura, altura, "T3", None, None)
 glfw.make_context_current(window)
 glfw.set_window_pos(window, int(1366/4), 0)
 
@@ -212,7 +212,9 @@ cameraSpeed = 5
 sensitivity = 0.15
 
 shouldIncrement = True
-lightOn = True
+lightOn = False
+lpx = 0.0
+lpz = 0.0
 
 #loc_light_pos = glGetUniformLocation(program, "lightPos")
 #glUniform3f(loc_light_pos, 0, 100, 600)
@@ -235,8 +237,8 @@ vertices_list = []
 normals_list = []
 textures_coord_list = []
 
-# Skybox?
-modelo = load_model_from_file('models/skybox/new.obj')
+# Skybox
+modelo = load_model_from_file('models/skybox/skybox.obj')
 modelos['skybox'] = {}
 modelos['skybox']['n_texturas'] = 1
 modelos['skybox']['start'] = len(vertices_list)
@@ -250,7 +252,7 @@ for face in modelo['faces']:
 modelos['skybox']['end'] = len(vertices_list)
 modelos['skybox']['size'] = modelos['skybox']['end'] - modelos['skybox']['start']
 modelos['skybox']['texture_id'] = texture_count
-load_texture_from_file(modelos['skybox']['texture_id'], 'models/skybox/lol.png')
+load_texture_from_file(modelos['skybox']['texture_id'], 'models/skybox/texture.png')
 texture_count += 1
 print(f"Quantidade de vértices de skybox.obj {modelos['skybox']['size']}")
 
@@ -293,7 +295,7 @@ texture_count += 1
 print(f"Quantidade de vértices de road.obj {modelos['road']['size']}")
 
 # Casa
-modelo = load_model_from_file('models/house/untitled.obj')
+modelo = load_model_from_file('models/house/house.obj')
 modelos['house'] = {}
 modelos['house']['n_texturas'] = 1
 modelos['house']['start'] = len(vertices_list)
@@ -308,7 +310,7 @@ for face in modelo['faces']:
 modelos['house']['end'] = len(vertices_list)
 modelos['house']['size'] = modelos['house']['end'] - modelos['house']['start']
 modelos['house']['texture_id'] = texture_count
-load_texture_from_file(modelos['house']['texture_id'], 'models/house/Hut_Low_lambert1_AlbedoTransparency.jpg')
+load_texture_from_file(modelos['house']['texture_id'], 'models/house/texture.jpg')
 texture_count += 1
 print(f"Quantidade de vértices de house.obj {modelos['house']['size']}")
 
@@ -353,7 +355,7 @@ texture_count += 1
 print(f"Quantidade de vértices de uganda_knuckles.obj {modelos['uganda_knuckles']['size']}")
 
 # Statue
-modelo = load_model_from_file('models/statue2/untitled.obj')
+modelo = load_model_from_file('models/statue/statue.obj')
 modelos['statue'] = {}
 modelos['statue']['n_texturas'] = 1
 modelos['statue']['start'] = len(vertices_list)
@@ -368,12 +370,12 @@ for face in modelo['faces']:
 modelos['statue']['end'] = len(vertices_list)
 modelos['statue']['size'] = modelos['statue']['end'] - modelos['statue']['start']
 modelos['statue']['texture_id'] = texture_count
-load_texture_from_file(modelos['statue']['texture_id'], 'models/statue2/DavidFixedDiff.jpg')
+load_texture_from_file(modelos['statue']['texture_id'], 'models/statue/texture.jpg')
 texture_count += 1
 print(f"Quantidade de vértices de statue.obj {modelos['statue']['size']}")
 
 # Tree
-modelo = load_model_from_file('models/tree/untitled.obj')
+modelo = load_model_from_file('models/tree/tree.obj')
 modelos['tree'] = {}
 modelos['tree']['n_texturas'] = 4
 modelos['tree']['start'] = len(vertices_list)
@@ -400,7 +402,7 @@ texture_count += modelos['tree']['n_texturas']
 print(f"Quantidade de vértices de tree.obj {modelos['tree']['size']}")
 
 # Deer
-modelo = load_model_from_file('models/deer/banana.obj')
+modelo = load_model_from_file('models/deer/deer.obj')
 modelos['deer'] = {}
 modelos['deer']['n_texturas'] = 1
 modelos['deer']['start'] = len(vertices_list)
@@ -415,12 +417,12 @@ for face in modelo['faces']:
 modelos['deer']['end'] = len(vertices_list)
 modelos['deer']['size'] = modelos['deer']['end'] - modelos['deer']['start']
 modelos['deer']['texture_id'] = texture_count
-load_texture_from_file(modelos['deer']['texture_id'], 'models/deer/Diffuse.jpg')
+load_texture_from_file(modelos['deer']['texture_id'], 'models/deer/texture.jpg')
 texture_count += 1
 print(f"Quantidade de vértices de deer.obj {modelos['deer']['size']}")
 
 # Bench
-modelo = load_model_from_file('models/bench/uploads_files_839016_OutdoorParkBenches(1).obj')
+modelo = load_model_from_file('models/bench/bench.obj')
 modelos['bench'] = {}
 modelos['bench']['n_texturas'] = 2
 modelos['bench']['start'] = len(vertices_list)
@@ -439,8 +441,8 @@ for face in modelo['faces']:
 modelos['bench']['end'] = len(vertices_list)
 modelos['bench']['size'] = len(vertices_list) - modelos['bench']['start']
 modelos['bench']['texture_id'] = texture_count
-load_texture_from_file(modelos['bench']['texture_id'], 'models/bench/OutdoorParkBenches_woods_BaseColor.jpg')
-load_texture_from_file(modelos['bench']['texture_id']+1, 'models/bench/OutdoorParkBenches_Steel_BaseColor.jpg')
+load_texture_from_file(modelos['bench']['texture_id'], 'models/bench/texture_wood.jpg')
+load_texture_from_file(modelos['bench']['texture_id']+1, 'models/bench/texture_steel.jpg')
 texture_count += modelos['bench']['n_texturas']
 print(f"Quantidade de vértices de bench.obj {modelos['bench']['size']}")
 
@@ -530,6 +532,7 @@ def key_event(window,key,scancode,action,mods):
     global cameraPos, cameraFront, cameraUp
     global wireframe, scale, cameraSpeed, sensitivity
     global shouldIncrement, lightOn
+    global lpx, lpz
 
     # quit simulation with <ESC> or Q
     if (key == glfw.KEY_Q or key == glfw.KEY_ESCAPE) and action == glfw.PRESS:
@@ -568,6 +571,15 @@ def key_event(window,key,scancode,action,mods):
             glUniform3f(loc_light, 1.0, 0.0, 0.0)
 
         lightOn = not lightOn
+
+    if key == glfw.KEY_KP_8 and action == glfw.REPEAT:
+        lpx += 10.0
+    if key == glfw.KEY_KP_2 and action == glfw.REPEAT:
+        lpx -= 10.0
+    if key == glfw.KEY_KP_4 and action == glfw.REPEAT:
+        lpz += 10.0
+    if key == glfw.KEY_KP_5 and action == glfw.REPEAT:
+        lpz -= 10.0
 
 yaw = -90.0
 pitch = 0.0
@@ -615,7 +627,7 @@ def draw_skybox():
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     ka = 1.0
     kd = 0.0
-    ks = 0.0
+    ks = 1.0
     ns = 256
     loc_ka = glGetUniformLocation(program, "ka")
     glUniform1f(loc_ka, ka)
@@ -637,8 +649,8 @@ def draw_terrain():
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     ka = 1.0
-    kd = 1.0
-    ks = 0.0
+    kd = 0.3
+    ks = 1.0
     ns = 256
     loc_ka = glGetUniformLocation(program, "ka")
     glUniform1f(loc_ka, ka)
@@ -661,7 +673,7 @@ def draw_road():
         loc_model = glGetUniformLocation(program, "model")
         ka = 1.0
         kd = 1.0
-        ks = 0.0
+        ks = 1.0
         ns = 256
         loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
         glUniform1f(loc_ka, ka)
@@ -684,7 +696,7 @@ def draw_house():
     loc_model = glGetUniformLocation(program, "model")
     ka = 1.0
     kd = 1.0
-    ks = 0.0
+    ks = 1.0
     ns = 256
     loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_ka, ka)
@@ -707,7 +719,7 @@ def draw_person():
     loc_model = glGetUniformLocation(program, "model")
     ka = 1.0
     kd = 1.0
-    ks = 0.0
+    ks = 1.0
     ns = 256
     loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_ka, ka)
@@ -776,6 +788,18 @@ def draw_tree_1():
     s_x = s_y = s_z = 100
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
+    ka = 1.0
+    kd = 1.0
+    ks = 1.0
+    ns = 256
+    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+    glUniform1f(loc_ka, ka)
+    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
+    glUniform1f(loc_kd, kd)
+    loc_ks = glGetUniformLocation(program, "ks")
+    glUniform1f(loc_ks, ks)
+    loc_ns = glGetUniformLocation(program, "ns")
+    glUniform1f(loc_ns, ns)
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id']+3)
     glDrawArrays(GL_TRIANGLES, modelos['tree']['AS12_Leaf2'], modelos['tree']['AS12_Leaf1']-modelos['tree']['AS12_Leaf2'])
@@ -794,6 +818,18 @@ def draw_tree_2():
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    ka = 1.0
+    kd = 1.0
+    ks = 1.0
+    ns = 256
+    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+    glUniform1f(loc_ka, ka)
+    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
+    glUniform1f(loc_kd, kd)
+    loc_ks = glGetUniformLocation(program, "ks")
+    glUniform1f(loc_ks, ks)
+    loc_ns = glGetUniformLocation(program, "ns")
+    glUniform1f(loc_ns, ns)
     glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id']+3)
     glDrawArrays(GL_TRIANGLES, modelos['tree']['AS12_Leaf2'], modelos['tree']['AS12_Leaf1']-modelos['tree']['AS12_Leaf2'])
     glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id']+2)
@@ -810,6 +846,18 @@ def draw_tree_3():
     s_x = s_y = s_z = 90
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
+    ka = 1.0
+    kd = 1.0
+    ks = 1.0
+    ns = 256
+    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+    glUniform1f(loc_ka, ka)
+    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
+    glUniform1f(loc_kd, kd)
+    loc_ks = glGetUniformLocation(program, "ks")
+    glUniform1f(loc_ks, ks)
+    loc_ns = glGetUniformLocation(program, "ns")
+    glUniform1f(loc_ns, ns)
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     glBindTexture(GL_TEXTURE_2D, modelos['tree']['texture_id']+3)
     glDrawArrays(GL_TRIANGLES, modelos['tree']['AS12_Leaf2'], modelos['tree']['AS12_Leaf1']-modelos['tree']['AS12_Leaf2'])
@@ -830,7 +878,7 @@ def draw_deer():
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     ka = 1.0
     kd = 1.0
-    ks = 0.0
+    ks = 1.0
     ns = 256
     loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
     glUniform1f(loc_ka, ka)
@@ -851,6 +899,18 @@ def draw_bench():
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+    ka = 1.0
+    kd = 1.0
+    ks = 1.0
+    ns = 256
+    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+    glUniform1f(loc_ka, ka)
+    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
+    glUniform1f(loc_kd, kd)
+    loc_ks = glGetUniformLocation(program, "ks")
+    glUniform1f(loc_ks, ks)
+    loc_ns = glGetUniformLocation(program, "ns")
+    glUniform1f(loc_ns, ns)
     glBindTexture(GL_TEXTURE_2D, modelos['bench']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['bench']['start'], modelos['bench']['Steel']-modelos['bench']['woods'])
     glBindTexture(GL_TEXTURE_2D, modelos['bench']['texture_id']+1)
@@ -863,6 +923,18 @@ def draw_bus(bus_z_pos):
     s_x = s_y = s_z = 0.3
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
+    ka = 1.0
+    kd = 1.0
+    ks = 1.0
+    ns = 256
+    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+    glUniform1f(loc_ka, ka)
+    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
+    glUniform1f(loc_kd, kd)
+    loc_ks = glGetUniformLocation(program, "ks")
+    glUniform1f(loc_ks, ks)
+    loc_ns = glGetUniformLocation(program, "ns")
+    glUniform1f(loc_ns, ns)
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
     glBindTexture(GL_TEXTURE_2D, modelos['bus']['texture_id'])
     glDrawArrays(GL_TRIANGLES, modelos['bus']['Wheel'], modelos['bus']['Glass']-modelos['bus']['Wheel'])
@@ -913,7 +985,7 @@ bus_z_pos = -1300
 eita = 0
 
 loc_light_pos = glGetUniformLocation(program, "lightPos2")
-glUniform3f(loc_light_pos, -610.0, 20.0, -90.0)
+glUniform3f(loc_light_pos, lpx, 20.0, lpz)
 
 while not glfw.window_should_close(window):
     glfw.poll_events()
@@ -921,6 +993,9 @@ while not glfw.window_should_close(window):
     glClearColor(0.0, 0.0, 0.0, 0.0)
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE if wireframe else GL_FILL)
+
+    loc_light_pos = glGetUniformLocation(program, "lightPos2")
+    glUniform3f(loc_light_pos, lpx, 20.0, lpz)
 
     draw_skybox()
     draw_terrain()
