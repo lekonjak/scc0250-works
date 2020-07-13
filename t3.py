@@ -308,7 +308,7 @@ texture_count += 1
 print(f"Quantidade de vértices de road.obj {modelos['road']['size']}")
 
 # Casa
-modelo = load_model_from_file('models/house/house.obj')
+modelo = load_model_from_file('models/house/house2.obj')
 modelos['house'] = {}
 modelos['house']['n_texturas'] = 1
 modelos['house']['start'] = len(vertices_list)
