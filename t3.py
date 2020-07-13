@@ -52,6 +52,8 @@ vertex_code = """
         """
 
 fragment_code = """
+        #version 120
+
         uniform vec3 lightPos1;
         uniform vec3 lightPos2;
         uniform vec3 viewPos;
@@ -583,7 +585,7 @@ def key_event(window,key,scancode,action,mods):
         else:
             glUniform3f(loc_light, 255.0/255.0, 147.0/255.0, 41.0/255.0)
         lightOn = not lightOn
-    
+
     if key == glfw.KEY_U and action == glfw.PRESS:
         if intensity + 0.05 < 1.0:
             intensity += 0.05
