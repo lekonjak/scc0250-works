@@ -209,7 +209,6 @@ def load_texture_from_file(texture_id, img_textura):
     img = Image.open(img_textura)
     img_width = img.size[0]
     img_height = img.size[1]
-    #image_data = img.tobytes("raw", "RGBA", 0, -1)
     image_data = img.convert("RGBA").tobytes("raw", "RGBA", 0, -1)
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_width, img_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data)
@@ -504,7 +503,7 @@ loc_vertices = glGetAttribLocation(program, "position")
 glEnableVertexAttribArray(loc_vertices)
 glVertexAttribPointer(loc_vertices, 3, GL_FLOAT, False, stride, offset)
 
-textures = np.zeros(len(textures_coord_list), [("position", np.float32, 2)]) # duas coordenadas
+textures = np.zeros(len(textures_coord_list), [("position", np.float32, 2)])
 textures['position'] = textures_coord_list
 
 # Upload data
@@ -516,7 +515,7 @@ loc_texture_coord = glGetAttribLocation(program, "texture_coord")
 glEnableVertexAttribArray(loc_texture_coord)
 glVertexAttribPointer(loc_texture_coord, 2, GL_FLOAT, False, stride, offset)
 
-normals = np.zeros(len(normals_list), [("position", np.float32, 3)]) # três coordenadas
+normals = np.zeros(len(normals_list), [("position", np.float32, 3)])
 normals['position'] = normals_list
 
 # Upload coordenadas normals de cada vertice
@@ -545,8 +544,7 @@ wireframe = False
 def key_event(window,key,scancode,action,mods):
     global cameraPos, cameraFront, cameraUp
     global wireframe, scale, cameraSpeed, sensitivity
-    global shouldIncrement, lightOn, intensity
-    global lpx, lpy, lpz
+    global lightOn, intensity
 
     # quit simulation with <ESC> or Q
     if (key == glfw.KEY_Q or key == glfw.KEY_ESCAPE) and action == glfw.PRESS:
@@ -575,9 +573,6 @@ def key_event(window,key,scancode,action,mods):
     if key == glfw.KEY_O and action == glfw.PRESS:
         wireframe = not wireframe
 
-    if key == glfw.KEY_SPACE and action == glfw.PRESS:
-        shouldIncrement = not shouldIncrement
-
     if key == glfw.KEY_L and action == glfw.PRESS:
         loc_light = glGetUniformLocation(program, "lightColor2")
         if lightOn:
@@ -596,19 +591,6 @@ def key_event(window,key,scancode,action,mods):
             intensity -= 0.05
         loc_light = glGetUniformLocation(program, "lightColor")
         glUniform3f(loc_light, (201.0/255.0) * intensity, (226.0/255.0) * intensity, (255.0/255.0) * intensity )
-
-    if key == glfw.KEY_KP_8 and (action == glfw.PRESS or action == glfw.REPEAT):
-        lpx += 10.0
-    if key == glfw.KEY_KP_2 and (action == glfw.PRESS or action == glfw.REPEAT):
-        lpx -= 10.0
-    if key == glfw.KEY_KP_4 and (action == glfw.PRESS or action == glfw.REPEAT):
-        lpz += 10.0
-    if key == glfw.KEY_KP_6 and (action == glfw.PRESS or action == glfw.REPEAT):
-        lpz -= 10.0
-    if key == glfw.KEY_KP_7 and (action == glfw.PRESS or action == glfw.REPEAT):
-        lpy += 10.0
-    if key == glfw.KEY_KP_1 and (action == glfw.PRESS or action == glfw.REPEAT):
-        lpy -= 10.0
 
 yaw = -90.0
 pitch = 0.0
@@ -704,9 +686,9 @@ def draw_road():
         kd = 0.2
         ks = 0.0
         ns = 1
-        loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+        loc_ka = glGetUniformLocation(program, "ka")
         glUniform1f(loc_ka, ka)
-        loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
+        loc_kd = glGetUniformLocation(program, "kd")
         glUniform1f(loc_kd, kd)
         loc_ks = glGetUniformLocation(program, "ks")
         glUniform1f(loc_ks, ks)
@@ -727,9 +709,9 @@ def draw_house():
     kd = 0.2
     ks = 0.0
     ns = 1
-    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+    loc_ka = glGetUniformLocation(program, "ka")
     glUniform1f(loc_ka, ka)
-    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
+    loc_kd = glGetUniformLocation(program, "kd")
     glUniform1f(loc_kd, kd)
     loc_ks = glGetUniformLocation(program, "ks")
     glUniform1f(loc_ks, ks)
@@ -752,9 +734,9 @@ def draw_person():
     kd = 0.2
     ks = 0.0
     ns = 1
-    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+    loc_ka = glGetUniformLocation(program, "ka")
     glUniform1f(loc_ka, ka)
-    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
+    loc_kd = glGetUniformLocation(program, "kd")
     glUniform1f(loc_kd, kd)
     loc_ks = glGetUniformLocation(program, "ks")
     glUniform1f(loc_ks, ks)
@@ -778,9 +760,9 @@ def draw_uganda_knuckles():
     ks = 1.0
     ns = 2048
 
-    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+    loc_ka = glGetUniformLocation(program, "ka")
     glUniform1f(loc_ka, ka)
-    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
+    loc_kd = glGetUniformLocation(program, "kd")
     glUniform1f(loc_kd, kd)
     loc_ks = glGetUniformLocation(program, "ks")
     glUniform1f(loc_ks, ks)
@@ -799,10 +781,10 @@ def draw_statue():
     ka = 0.5
     kd = 0.2
     ks = 1.0
-    ns = 4096
-    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+    ns = 1024
+    loc_ka = glGetUniformLocation(program, "ka")
     glUniform1f(loc_ka, ka)
-    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
+    loc_kd = glGetUniformLocation(program, "kd")
     glUniform1f(loc_kd, kd)
     loc_ks = glGetUniformLocation(program, "ks")
     glUniform1f(loc_ks, ks)
@@ -823,9 +805,9 @@ def draw_tree_1():
     kd = 0.6
     ks = 0.0
     ns = 1
-    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+    loc_ka = glGetUniformLocation(program, "ka")
     glUniform1f(loc_ka, ka)
-    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
+    loc_kd = glGetUniformLocation(program, "kd")
     glUniform1f(loc_kd, kd)
     loc_ks = glGetUniformLocation(program, "ks")
     glUniform1f(loc_ks, ks)
@@ -853,9 +835,9 @@ def draw_tree_2():
     kd = 0.5
     ks = 1.0
     ns = 1
-    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+    loc_ka = glGetUniformLocation(program, "ka")
     glUniform1f(loc_ka, ka)
-    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
+    loc_kd = glGetUniformLocation(program, "kd")
     glUniform1f(loc_kd, kd)
     loc_ks = glGetUniformLocation(program, "ks")
     glUniform1f(loc_ks, ks)
@@ -871,7 +853,7 @@ def draw_tree_2():
     glDrawArrays(GL_TRIANGLES, modelos['tree']['AS12_Branch1'], modelos['tree']['end']-modelos['tree']['AS12_Branch1'])
 
 def draw_tree_3():
-    angle = 30.0;
+    angle = 0.0;
     r_x = 0.0; r_y = 1.0; r_z = 0.0
     t_x = -600.0; t_y = 2.0; t_z = 0.0
     s_x = s_y = s_z = 90
@@ -881,9 +863,9 @@ def draw_tree_3():
     kd = 0.4
     ks = 0.0
     ns = 1
-    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+    loc_ka = glGetUniformLocation(program, "ka")
     glUniform1f(loc_ka, ka)
-    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
+    loc_kd = glGetUniformLocation(program, "kd")
     glUniform1f(loc_kd, kd)
     loc_ks = glGetUniformLocation(program, "ks")
     glUniform1f(loc_ks, ks)
@@ -911,9 +893,9 @@ def draw_deer():
     kd = 0.0
     ks = 0.0
     ns = 1
-    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+    loc_ka = glGetUniformLocation(program, "ka")
     glUniform1f(loc_ka, ka)
-    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
+    loc_kd = glGetUniformLocation(program, "kd")
     glUniform1f(loc_kd, kd)
     loc_ks = glGetUniformLocation(program, "ks")
     glUniform1f(loc_ks, ks)
@@ -934,9 +916,9 @@ def draw_bench():
     kd = 0.2
     ks = 0.0
     ns = 1
-    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+    loc_ka = glGetUniformLocation(program, "ka")
     glUniform1f(loc_ka, ka)
-    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
+    loc_kd = glGetUniformLocation(program, "kd")
     glUniform1f(loc_kd, kd)
     loc_ks = glGetUniformLocation(program, "ks")
     glUniform1f(loc_ks, ks)
@@ -958,9 +940,9 @@ def draw_bus(bus_z_pos):
     kd = 0.7
     ks = 0.2
     ns = 256
-    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
+    loc_ka = glGetUniformLocation(program, "ka")
     glUniform1f(loc_ka, ka)
-    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
+    loc_kd = glGetUniformLocation(program, "kd")
     glUniform1f(loc_kd, kd)
     loc_ks = glGetUniformLocation(program, "ks")
     glUniform1f(loc_ks, ks)
@@ -1013,10 +995,9 @@ last = glfw.get_time()
 nbframes = 0
 
 bus_z_pos = -1300
-eita = 0
+sunPos = 0
 
 loc_light_pos = glGetUniformLocation(program, "lightPos2")
-glUniform3f(loc_light_pos, 0.0, -20.0, 510.0)
 glUniform3f(loc_light_pos, 0.0, 50.0, 510.0)
 
 while not glfw.window_should_close(window):
@@ -1044,10 +1025,10 @@ while not glfw.window_should_close(window):
     if bus_z_pos > 1300:
         bus_z_pos = -1300
 
-    if shouldIncrement:
-        eita += 0.1
+    sunPos += 0.05
+
     loc_light_pos = glGetUniformLocation(program, "lightPos1")
-    glUniform3f(loc_light_pos, 1000*math.sin(eita), 500, 1000*math.cos(eita))
+    glUniform3f(loc_light_pos, 1000*math.sin(sunPos), 500, 1000*math.cos(sunPos))
 
     mat_view = view()
     loc_view = glGetUniformLocation(program, "view")
