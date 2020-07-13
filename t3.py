@@ -330,7 +330,7 @@ texture_count += 1
 print(f"Quantidade de vértices de house.obj {modelos['house']['size']}")
 
 # Denis
-modelo = load_model_from_file('models/person/denis_30k.obj')
+modelo = load_model_from_file('models/person/untitled.obj')
 modelos['person'] = {}
 modelos['person']['n_texturas'] = 1
 modelos['person']['start'] = len(vertices_list)
@@ -370,7 +370,7 @@ texture_count += 1
 print(f"Quantidade de vértices de uganda_knuckles.obj {modelos['uganda_knuckles']['size']}")
 
 # Statue
-modelo = load_model_from_file('models/statue/statue.obj')
+modelo = load_model_from_file('models/statue/untitled.obj')
 modelos['statue'] = {}
 modelos['statue']['n_texturas'] = 1
 modelos['statue']['start'] = len(vertices_list)
@@ -741,8 +741,10 @@ def draw_house():
 
 def draw_person():
     angle = 90.0;
+    angle = 0.0;
     r_x = 0.0; r_y = 1.0; r_z = 0.0
     t_x = -680.0; t_y = 2.0; t_z = 0.0
+    t_x = 0.0; t_y = 2.0; t_z = 680.0
     s_x = s_y = s_z = 0.65;
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
@@ -788,9 +790,9 @@ def draw_uganda_knuckles():
     glDrawArrays(GL_TRIANGLES, modelos['uganda_knuckles']['start'], modelos['uganda_knuckles']['size'])
 
 def draw_statue():
-    angle = 90.0;
+    angle = 0.0;
     r_x = 0.0; r_y = 1.0; r_z = 0.0
-    t_x = -610.0; t_y = 2.0; t_z = -90.0
+    t_x = -90.0; t_y = 2.0; t_z = 610.0
     s_x = s_y = s_z = 0.35
     mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
     loc_model = glGetUniformLocation(program, "model")
@@ -1015,6 +1017,7 @@ eita = 0
 
 loc_light_pos = glGetUniformLocation(program, "lightPos2")
 glUniform3f(loc_light_pos, 0.0, -20.0, 510.0)
+glUniform3f(loc_light_pos, 0.0, 50.0, 510.0)
 
 while not glfw.window_should_close(window):
     glfw.poll_events()
