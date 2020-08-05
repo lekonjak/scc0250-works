@@ -18,6 +18,11 @@ These commands setup a virtual python3 environment at current directory and inst
 ###### About it
 
 
+<p align="center">
+	<img src="media/deer_wireframe.png" alt="deer model in wireframe view mode at t3">
+</p>
+
+
 There were three assignments, named, respectively, __t1__, __t2__ and __t3__.
 
 
