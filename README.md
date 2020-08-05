@@ -24,13 +24,16 @@ There were three assignments, named, respectively, __t1__, __t2__ and __t3__.
 __t1__ consists in experimenting basic matrix transformations to develop a spring jumping to left or right.  
 To ensure a physically coherent movimentation, we implemented __semi implicit euler method__ as integrator, to integrate basic equations of motion, using it with a semi-fixed timestep algorithm to define our __deltatime__, guided by [Glenn Fiedler's](https://gafferongames.com/) article series about game physics.  
 
+<p align="center">
+	<img src="media/t1.gif" alt="t1 spring jump">
+</p>
 
-<img align="center" src="media/t1.gif" alt="__t1__ spring jump">
 
 __t2__ and __t3__ are very similar. They aim to implement a __MVP matrix__(a.k.a. __Model View Projection__) to render imported __.obj__ models in a 3D scene. __t3__ extends __t2__ functionalities to include local illumination, implementing __Phong reflection model__ to a slightly modified environment, with some model changes from previous assignment.
 
-
-<img align="center" src="media/t3.gif" alt="__t3__ footage">
+<p align="center">
+	<img src="media/t3.gif" alt="t3 footage"/>
+</p>
 
 
 ###### Authors 
