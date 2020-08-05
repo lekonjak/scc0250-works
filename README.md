@@ -1,4 +1,4 @@
-SSC0250/ Computer Graphics - Class assignments
+SSC0250/Computer Graphics - Class assignments
 ---
 ###### How to run it
 
@@ -25,7 +25,7 @@ __t1__ consists in experimenting basic matrix transformations to develop a sprin
 To ensure a physically coherent movimentation, we implemented __semi implicit euler method__ as integrator, to integrate basic equations of motion, using it with a semi-fixed timestep algorithm to define our __deltatime__, guided by [Glenn Fiedler's](https://gafferongames.com/) article series about game physics.  
 
 
-T2 and T3 are very similar. They aim to implement MVP matrix(a.k.a. Model View Projection) to render imported _.obj__ models in a 3D scene. T3 extends T2 functionalities to include local illumination, implementing Phong reflection model to a slightly modified environment, with some model changes from previous assignment.
+__t2__ and __t3__ are very similar. They aim to implement a __MVP matrix__(a.k.a. __Model View Projection__) to render imported __.obj__ models in a 3D scene. __t3__ extends __t2__ functionalities to include local illumination, implementing __Phong reflection model__ to a slightly modified environment, with some model changes from previous assignment.
 
 
 ###### Authors 
