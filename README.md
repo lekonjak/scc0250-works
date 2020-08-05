@@ -19,7 +19,7 @@ These commands setup a virtual python3 environment at current directory and inst
 
 
 <p align="center">
-	<img src="media/deer_wireframe.png" alt="deer model in wireframe view mode at t3">
+	<img src="media/deer_wireframe.png" height="320" width="320" alt="deer model in wireframe view mode at t3">
 </p>
 
 
