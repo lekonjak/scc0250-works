@@ -172,7 +172,7 @@ vertices_list = []
 textures_coord_list = []
 
 # Skybox?
-modelo = load_model_from_file('models/skybox/new.obj')
+modelo = load_model_from_file('models/skybox/skybox.obj')
 modelos['skybox'] = {}
 modelos['skybox']['n_texturas'] = 1
 modelos['skybox']['start'] = len(vertices_list)
@@ -184,7 +184,7 @@ for face in modelo['faces']:
 modelos['skybox']['end'] = len(vertices_list)
 modelos['skybox']['size'] = modelos['skybox']['end'] - modelos['skybox']['start']
 modelos['skybox']['texture_id'] = texture_count
-load_texture_from_file(modelos['skybox']['texture_id'], 'models/skybox/lol.png')
+load_texture_from_file(modelos['skybox']['texture_id'], 'models/skybox/texture.png')
 texture_count += 1
 print(f"Quantidade de vértices de skybox.obj {modelos['skybox']['size']}")
 
@@ -223,7 +223,7 @@ texture_count += 1
 print(f"Quantidade de vértices de road.obj {modelos['road']['size']}")
 
 # Casa
-modelo = load_model_from_file('models/house/untitled.obj')
+modelo = load_model_from_file('models/house/house.obj')
 modelos['house'] = {}
 modelos['house']['n_texturas'] = 1
 modelos['house']['start'] = len(vertices_list)
@@ -236,12 +236,12 @@ for face in modelo['faces']:
 modelos['house']['end'] = len(vertices_list)
 modelos['house']['size'] = modelos['house']['end'] - modelos['house']['start']
 modelos['house']['texture_id'] = texture_count
-load_texture_from_file(modelos['house']['texture_id'], 'models/house/Hut_Low_lambert1_AlbedoTransparency.jpg')
+load_texture_from_file(modelos['house']['texture_id'], 'models/house/texture.jpg')
 texture_count += 1
 print(f"Quantidade de vértices de house.obj {modelos['house']['size']}")
 
 # Denis
-modelo = load_model_from_file('models/person/denis_30k.obj')
+modelo = load_model_from_file('models/person/denis.obj')
 modelos['person'] = {}
 modelos['person']['n_texturas'] = 1
 modelos['person']['start'] = len(vertices_list)
@@ -277,7 +277,7 @@ texture_count += 1
 print(f"Quantidade de vértices de uganda_knuckles.obj {modelos['uganda_knuckles']['size']}")
 
 # Statue
-modelo = load_model_from_file('models/statue2/untitled.obj')
+modelo = load_model_from_file('models/statue/statue.obj')
 modelos['statue'] = {}
 modelos['statue']['n_texturas'] = 1
 modelos['statue']['start'] = len(vertices_list)
@@ -290,12 +290,12 @@ for face in modelo['faces']:
 modelos['statue']['end'] = len(vertices_list)
 modelos['statue']['size'] = modelos['statue']['end'] - modelos['statue']['start']
 modelos['statue']['texture_id'] = texture_count
-load_texture_from_file(modelos['statue']['texture_id'], 'models/statue2/DavidFixedDiff.jpg')
+load_texture_from_file(modelos['statue']['texture_id'], 'models/statue/texture.jpg')
 texture_count += 1
 print(f"Quantidade de vértices de statue.obj {modelos['statue']['size']}")
 
 # Tree
-modelo = load_model_from_file('models/tree/untitled.obj')
+modelo = load_model_from_file('models/tree/tree.obj')
 modelos['tree'] = {}
 modelos['tree']['n_texturas'] = 4
 modelos['tree']['start'] = len(vertices_list)
@@ -320,7 +320,7 @@ texture_count += modelos['tree']['n_texturas']
 print(f"Quantidade de vértices de tree.obj {modelos['tree']['size']}")
 
 # Deer
-modelo = load_model_from_file('models/deer/untitled.obj')
+modelo = load_model_from_file('models/deer/deer.obj')
 modelos['deer'] = {}
 modelos['deer']['n_texturas'] = 1
 modelos['deer']['start'] = len(vertices_list)
@@ -333,12 +333,12 @@ for face in modelo['faces']:
 modelos['deer']['end'] = len(vertices_list)
 modelos['deer']['size'] = modelos['deer']['end'] - modelos['deer']['start']
 modelos['deer']['texture_id'] = texture_count
-load_texture_from_file(modelos['deer']['texture_id'], 'models/deer/Diffuse.jpg')
+load_texture_from_file(modelos['deer']['texture_id'], 'models/deer/texture.jpg')
 texture_count += 1
 print(f"Quantidade de vértices de deer.obj {modelos['deer']['size']}")
 
 # Bench
-modelo = load_model_from_file('models/bench/uploads_files_839016_OutdoorParkBenches(1).obj')
+modelo = load_model_from_file('models/bench/bench.obj')
 modelos['bench'] = {}
 modelos['bench']['n_texturas'] = 2
 modelos['bench']['start'] = len(vertices_list)
@@ -355,8 +355,8 @@ for face in modelo['faces']:
 modelos['bench']['end'] = len(vertices_list)
 modelos['bench']['size'] = len(vertices_list) - modelos['bench']['start']
 modelos['bench']['texture_id'] = texture_count
-load_texture_from_file(modelos['bench']['texture_id'], 'models/bench/OutdoorParkBenches_woods_BaseColor.jpg')
-load_texture_from_file(modelos['bench']['texture_id']+1, 'models/bench/OutdoorParkBenches_Steel_BaseColor.png')
+load_texture_from_file(modelos['bench']['texture_id'], 'models/bench/texture_wood.jpg')
+load_texture_from_file(modelos['bench']['texture_id']+1, 'models/bench/texture_steel.jpg')
 texture_count += modelos['bench']['n_texturas']
 print(f"Quantidade de vértices de bench.obj {modelos['bench']['size']}")
 
