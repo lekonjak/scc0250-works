@@ -4,6 +4,12 @@
 # Ricardo Alves de Araujo - 9364890
 # Tiago Esperança Triques - 9037713
 
+# Use WASD and mouse to move and look around
+# U and P to increase or decrease the external light source intensity
+# L to toggle internal light source
+# O to toggle wireframe view mode
+# Q to quit
+
 #{{{ IMPORTS
 
 import glfw

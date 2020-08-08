@@ -3,6 +3,10 @@
 # Ricardo Alves de Araujo - 9364890
 # Tiago Esperança Triques - 9037713
 
+# Use WASD and mouse to move and look around.
+# P to toggle wireframe mode view
+# Q to quit
+
 #{{{ IMPORTS
 
 import glfw
